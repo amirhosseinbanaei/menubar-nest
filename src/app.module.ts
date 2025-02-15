@@ -3,6 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RestaurantsModule } from './restaurants/restaurants.module';
+import { LanguagesModule } from './languages/languages.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ItemsModule } from './items/items.module';
 
 @Module({
   imports: [
@@ -17,9 +21,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [
         'dist/**/**/**/*.entity{.ts,.js}',
         'dist/**/**/*.entity{.ts,.js}',
+        // __dirname + '/**/*.entity{.ts,.js}',
       ],
       synchronize: true,
+      migrations: ['dist/database/migration/*{.ts,.js}'],
     }),
+    RestaurantsModule,
+    LanguagesModule,
+    CategoriesModule,
+    ItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
