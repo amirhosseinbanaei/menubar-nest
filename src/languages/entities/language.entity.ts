@@ -13,9 +13,6 @@ export class Language {
   @Column({ length: 100, unique: true })
   language_name: string;
 
-  @Column({ nullable: true, unique: true })
-  branch_id: number;
-
   @OneToMany(() => RestaurantTranslation, (translation) => translation.language)
   restaurantTranslations: RestaurantTranslation[];
 
