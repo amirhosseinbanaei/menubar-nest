@@ -1,34 +1,79 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  ParseIntPipe,
+  Put,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { LanguageValidationPipe } from '../common/pipes/language.pipe';
+import { CustomFileInterceptor } from '../common/interceptors/file.interceptor';
+import {
+  UpdateCategoryDto,
+  UpdateCategoryOrdersDto,
+} from './dto/update-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoriesService.create(createCategoryDto);
+  @UseInterceptors(
+    CustomFileInterceptor('image', './uploads/categories', 'image'),
+  )
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body(new LanguageValidationPipe()) createCategoryDto: CreateCategoryDto,
+  ) {
+    return this.categoriesService.create(createCategoryDto, file.filename);
   }
 
   @Get()
-  findAll() {
-    return this.categoriesService.findAll();
+  findAll(@Query('lang') language: string | undefined) {
+    return this.categoriesService.findAll(language, {
+      relations: 'all',
+      serialize: true,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoriesService.findOne(+id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('lang') language: string | undefined,
+  ) {
+    return this.categoriesService.findOne(id, language, {
+      relations: 'all',
+      serialize: true,
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoriesService.update(+id, updateCategoryDto);
+  @UseInterceptors(
+    CustomFileInterceptor('image', './uploads/categories', 'image'),
+  )
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
+    return this.categoriesService.update(id, updateCategoryDto, file);
+  }
+
+  @Put()
+  updateOrders(@Body() updateCategoryOrdersDto: UpdateCategoryOrdersDto) {
+    return this.categoriesService.updateOrders(updateCategoryOrdersDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.categoriesService.remove(id);
   }
 }
