@@ -1,0 +1,38 @@
+meta {
+  name: Update Category
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{BASE_URL}}/categories/5
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "restaurant_id": 1,
+    "translations": [
+      {
+        "name": "پیتزا",
+        "language_code": "fa"
+      },
+      {
+        "name": "pizza",
+        "language_code": "en"
+      }
+    ],
+    "image": "https://google.com/image.png",
+    "order": 1,
+    "branch_id": 0
+  }
+}
+
+body:multipart-form {
+  translations: [{"name": "کبابhklsdfafhjnkjnبhhب", "language": "fa"},{"name": "kebadsfasdfabbbkhkhejljlnn", "language": "en"}]
+  ~restaurant_id: 1
+  ~branch_id: 0
+  ~order: 1
+  ~image: @file(/Users/amirhosseinbanaei/Pictures/Myself/photo_2020-09-24_21-34-13.jpg)
+}
