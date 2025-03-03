@@ -1,0 +1,26 @@
+meta {
+  name: Update Subcategory
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{BASE_URL}}/subcategories/7
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "translations": [
+      {
+        "name": "زیر دسته فارسی first",
+        "language": "fa"
+      },
+      {
+        "name": "english subcategory first",
+        "language": "en"
+      }
+    ]
+  }
+}

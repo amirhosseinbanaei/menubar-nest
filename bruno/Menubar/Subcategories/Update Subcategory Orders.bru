@@ -1,0 +1,31 @@
+meta {
+  name: Update Subcategory Orders
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{BASE_URL}}/subcategories
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "category_id": 7,
+    "orders": [
+      {
+        "id": 7, 
+        "order": 1
+      },
+      {
+        "id": 8, 
+        "order": 2
+      },
+      {
+        "id": 11, 
+        "order": 3
+      }
+    ]
+  }
+}
