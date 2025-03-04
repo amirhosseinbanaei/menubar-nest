@@ -10,7 +10,7 @@ import { Subcategory } from '../../subcategories/entities/subcategory.entity';
 import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { ItemTranslation } from './item-translation.entity';
 import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
-import { Tag } from '../../tags/tag.entity';
+import { Tag } from '../../tags/entities/tag.entity';
 
 @Entity()
 export class Item {
