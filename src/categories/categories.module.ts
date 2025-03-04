@@ -11,7 +11,6 @@ import { Language } from '../languages/entities/language.entity';
 import { CategoryTranslation } from './entities/category-translation.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckQueryLanguageMiddleware } from '../common/middlewares/language.middleware';
-import { CheckCategoryExistMiddleware } from '../common/middlewares/category.middleware';
 
 @Module({
   imports: [
@@ -33,8 +32,6 @@ export class CategoriesModule implements NestModule {
       .forRoutes({
         path: 'categories/:id',
         method: RequestMethod.GET,
-      })
-      .apply(CheckCategoryExistMiddleware)
-      .forRoutes({ path: 'categories/:id', method: RequestMethod.PATCH });
+      });
   }
 }
