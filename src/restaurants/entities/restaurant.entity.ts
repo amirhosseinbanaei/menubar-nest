@@ -3,6 +3,7 @@ import { RestaurantTranslation } from './restaurant-translation.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Item } from '../../items/entities/item.entity';
 import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Entity()
 export class Restaurant {
@@ -31,4 +32,7 @@ export class Restaurant {
 
   @OneToMany(() => ExtraItem, (extraItem) => extraItem.restaurant)
   extraItems: ExtraItem[];
+
+  @OneToMany(() => Tag, (tag) => tag.restaurant)
+  tags: Tag[];
 }
