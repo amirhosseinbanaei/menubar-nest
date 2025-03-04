@@ -70,8 +70,8 @@ export class ListingOrdersService {
       case 'subcategories':
         await this.subCategoryRepository.save(orders);
         return 'subcategories listing orders updated successfully';
-      // case 'items':
-      //   return await this.itemRepository.save(orders);
+      case 'items':
+        return await this.itemRepository.save(orders);
       default:
         throw new BadRequestException(`Can't update listing orders`);
     }
