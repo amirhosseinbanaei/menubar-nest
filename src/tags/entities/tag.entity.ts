@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { TagTranslation } from './tag-translation.entity';
 import { Item } from '../../items/entities/item.entity';
+import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 
 @Entity()
 export class Tag {
@@ -21,4 +22,7 @@ export class Tag {
 
   @OneToMany(() => TagTranslation, (translation) => translation.tag)
   translations: TagTranslation[];
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.items)
+  restaurant: Restaurant;
 }
