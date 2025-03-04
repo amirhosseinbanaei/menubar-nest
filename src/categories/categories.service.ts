@@ -10,8 +10,6 @@ import { CategoryTranslation } from './entities/category-translation.entity';
 import { DataSource, MoreThan, Repository } from 'typeorm';
 import { DeleteUploadedFile } from '../common/utils/function.util';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { categoryRelationsHandler } from './utils/categories.util';
-import { CategoryRelations } from './types/relations-category.type';
 import { plainToInstance } from 'class-transformer';
 import { CategoryResponseDto } from './dto/response-category.dto';
 import { executeTransaction } from 'src/common/utils/transaction.util';
@@ -76,11 +74,13 @@ export class CategoriesService {
     id: number,
     language?: string,
     options?: {
-      relations?: CategoryRelations;
+      relation?: boolean;
       serialize?: boolean;
     },
   ) {
-    const queryRelations = categoryRelationsHandler(options?.relations);
+    const relations = options?.relation
+      ? ['translations', 'translations.language', 'subcategory']
+      : [];
 
     const category = await this.categoryRepository.findOne({
       where: {
@@ -98,7 +98,7 @@ export class CategoriesService {
           },
         },
       },
-      relations: queryRelations,
+      relations,
     });
 
     if (!category)
@@ -115,11 +115,13 @@ export class CategoriesService {
   async findAll(
     language?: string,
     options?: {
-      relations?: CategoryRelations;
+      relation?: boolean;
       serialize?: boolean;
     },
   ) {
-    const queryRelations = categoryRelationsHandler(options?.relations);
+    const relations = options?.relation
+      ? ['translations', 'translations.language']
+      : [];
 
     const categories = await this.categoryRepository.find({
       where: {
@@ -128,15 +130,8 @@ export class CategoriesService {
             language_code: language,
           },
         },
-        subcategories: {
-          translations: {
-            language: {
-              language_code: language,
-            },
-          },
-        },
       },
-      relations: queryRelations,
+      relations,
     });
 
     if (options?.serialize)
@@ -153,7 +148,7 @@ export class CategoriesService {
     newImageFile?: Express.Multer.File,
   ) {
     const category = (await this.findOne(id, undefined, {
-      relations: 'all',
+      relation: true,
     })) as Category;
 
     const { translations } = updateCategoryDto;
@@ -200,7 +195,7 @@ export class CategoriesService {
   async remove(id: number) {
     const category = await this.findOne(id, undefined, {
       serialize: true,
-      relations: 'all',
+      relation: true,
     });
 
     if (!category) return;

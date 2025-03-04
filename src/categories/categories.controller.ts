@@ -10,16 +10,12 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
-  Put,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { LanguageValidationPipe } from '../common/pipes/language.pipe';
 import { CustomFileInterceptor } from '../common/interceptors/file.interceptor';
-import {
-  UpdateCategoryDto,
-  UpdateCategoryOrdersDto,
-} from './dto/update-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -39,7 +35,7 @@ export class CategoriesController {
   @Get()
   findAll(@Query('lang') language: string | undefined) {
     return this.categoriesService.findAll(language, {
-      relations: 'all',
+      relation: true,
       serialize: true,
     });
   }
@@ -50,7 +46,7 @@ export class CategoriesController {
     @Query('lang') language: string | undefined,
   ) {
     return this.categoriesService.findOne(id, language, {
-      relations: 'all',
+      relation: true,
       serialize: true,
     });
   }
@@ -65,11 +61,6 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoriesService.update(id, updateCategoryDto, file);
-  }
-
-  @Put()
-  updateOrders(@Body() updateCategoryOrdersDto: UpdateCategoryOrdersDto) {
-    return this.categoriesService.updateOrders(updateCategoryOrdersDto);
   }
 
   @Delete(':id')
