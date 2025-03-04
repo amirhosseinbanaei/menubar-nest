@@ -1,8 +1,8 @@
-import { IsString, Length } from 'class-validator';
+import { Expose } from 'class-transformer';
 
-export class CreateLanguageDto {
-  @IsString()
+export class LanguageDto {
+  @Expose()
   language_name: string;
-  @Length(2, 5)
+  @Expose()
   language_code: string;
 }

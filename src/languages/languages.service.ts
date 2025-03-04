@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateLanguageDto } from './dto/language.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Language } from './entities/language.entity';
+import { CreateLanguageDto } from './dto/create-language.dto';
 
 @Injectable()
 export class LanguagesService {
@@ -29,5 +29,16 @@ export class LanguagesService {
     return await this.languageService.findOne({
       where: { language_code },
     });
+  }
+
+  async listOfLanguage() {
+    const langueCodes = await this.languageService
+      .createQueryBuilder('category')
+      .select(['language_code'])
+      .getRawMany();
+    const languageCodeList = langueCodes.map(
+      (langObject) => langObject.language_code,
+    );
+    return languageCodeList;
   }
 }
