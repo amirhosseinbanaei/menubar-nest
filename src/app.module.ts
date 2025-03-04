@@ -7,6 +7,10 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { LanguagesModule } from './languages/languages.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ItemsModule } from './items/items.module';
+import { SubcategoriesModule } from './subcategories/subcategories.module';
+import { ListingOrdersModule } from './listing-orders/listing-orders.module';
+import { TagsModule } from './tags/tags.module';
+import { ExtraItemsModule } from './extra-items/extra-items.module';
 
 @Module({
   imports: [
@@ -24,13 +28,17 @@ import { ItemsModule } from './items/items.module';
         __dirname + '/**/*.entity{.ts,.js}',
       ],
       synchronize: true,
-      autoLoadEntities: false,
+      autoLoadEntities: true,
       migrations: ['dist/database/migration/*{.ts,.js}'],
     }),
     RestaurantsModule,
     LanguagesModule,
     CategoriesModule,
     ItemsModule,
+    SubcategoriesModule,
+    ListingOrdersModule,
+    TagsModule,
+    ExtraItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
