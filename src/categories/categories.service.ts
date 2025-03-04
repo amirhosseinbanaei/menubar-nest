@@ -9,10 +9,7 @@ import { Category } from './entities/category.entity';
 import { CategoryTranslation } from './entities/category-translation.entity';
 import { DataSource, MoreThan, Repository } from 'typeorm';
 import { DeleteUploadedFile } from '../common/utils/function.util';
-import {
-  UpdateCategoryDto,
-  UpdateCategoryOrdersDto,
-} from './dto/update-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 import { categoryRelationsHandler } from './utils/categories.util';
 import { CategoryRelations } from './types/relations-category.type';
 import { plainToInstance } from 'class-transformer';
@@ -150,19 +147,6 @@ export class CategoriesService {
     return categories;
   }
 
-  async findAllTranslation(lang: string, name?: string) {
-    const categoryTranslation = await this.categoryTranslationRepository.find({
-      where: { name, language: { language_code: lang } },
-    });
-
-    if (!categoryTranslation) {
-      throw new NotFoundException(
-        `Category Translation with name ${name} and language ${lang} not found.`,
-      );
-    }
-    return categoryTranslation;
-  }
-
   async update(
     id: number,
     updateCategoryDto: UpdateCategoryDto,
@@ -211,21 +195,6 @@ export class CategoriesService {
     return plainToInstance(CategoryResponseDto, category, {
       excludeExtraneousValues: true,
     });
-  }
-
-  async updateOrders(updateCategoryOrdersDto: UpdateCategoryOrdersDto) {
-    const { orders } = updateCategoryOrdersDto;
-
-    const categories = (await this.findAll(undefined, {
-      serialize: false,
-    })) as Category[];
-
-    for (let i = 0; i < categories.length; i++) {
-      if (categories[i].id === orders[i].id)
-        categories[i].order = orders[i].order;
-    }
-
-    return await this.categoryRepository.save(categories);
   }
 
   async remove(id: number) {
