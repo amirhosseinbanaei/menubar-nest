@@ -9,6 +9,9 @@ const categoryRelationsHandler = (relations?: CategoryRelations) => {
         'subcategories',
         'subcategories.translations',
         'subcategories.translations.language',
+        'items',
+        'items.translations',
+        'items.translations.language',
       ];
     case 'translations':
       return ['translations', 'translations.language'];

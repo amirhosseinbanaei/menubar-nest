@@ -184,16 +184,18 @@ export class CategoriesService {
     if (translations) {
       await Promise.all(
         translations.map(async (translation) => {
-          const existingTranslation = await this.findAllTranslation(
-            translation.language,
-            translation.name,
-          );
+          const duplicate = await this.categoryTranslationRepository.find({
+            where: {
+              name: translation.name,
+              language: { language_code: translation.language },
+            },
+          });
 
-          if (existingTranslation.length) {
+          if (duplicate.length) {
             throw new ConflictException({
               status: 'error',
               message: 'Category name already exists',
-              existing_names: existingTranslation,
+              existing_names: duplicate,
             });
           }
 
