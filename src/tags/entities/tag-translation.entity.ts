@@ -1,20 +1,25 @@
-import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Tag } from './tag.entity';
 import { Language } from '../../languages/entities/language.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class TagTranslation {
-  @PrimaryColumn()
+  @Exclude()
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryColumn({ length: 5 })
-  language_code: string;
-
   @Column({ length: 255 })
-  translated_name: string;
+  name: string;
 
-  @Column({ length: 255 })
-  translated_description: string;
+  @Column()
+  description: string;
 
   @ManyToOne(() => Tag, (tag) => tag.translations, { onDelete: 'CASCADE' })
   tag: Tag;
@@ -22,5 +27,6 @@ export class TagTranslation {
   @ManyToOne(() => Language, (language) => language.tagTranslations, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'language' })
   language: Language;
 }

@@ -11,7 +11,7 @@ import { Item } from '../../items/entities/item.entity';
 @Entity()
 export class Tag {
   @PrimaryGeneratedColumn()
-  tag_id: number;
+  id: number;
 
   @ManyToOne(() => Item, (item) => item.tags, { onDelete: 'CASCADE' })
   item: Item;
