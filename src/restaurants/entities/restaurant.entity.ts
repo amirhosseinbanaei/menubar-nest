@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { RestaurantTranslation } from './restaurant-translation.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Item } from '../../items/entities/item.entity';
-import { ExtraItem } from '../../items/entities/extra-item.entity';
+import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
 
 @Entity()
 export class Restaurant {
@@ -21,7 +21,9 @@ export class Restaurant {
   )
   translations: RestaurantTranslation[];
 
-  @OneToMany(() => Category, (category) => category.restaurant)
+  @OneToMany(() => Category, (category) => category.restaurant, {
+    cascade: true,
+  })
   categories: Category[];
 
   @OneToMany(() => Item, (item) => item.restaurant)

@@ -26,7 +26,6 @@ export class RestaurantsService {
   async findOne(restaurant_id: number) {
     return await this.restaurantRepository.findOne({
       where: { id: restaurant_id },
-      relations: ['languages', 'languages.languages'],
     });
   }
 

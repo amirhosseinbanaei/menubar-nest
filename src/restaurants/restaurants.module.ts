@@ -21,5 +21,6 @@ import { RestaurantTranslation } from './entities/restaurant-translation.entity'
     RestaurantsService,
     LanguagesService,
   ],
+  exports: [RestaurantsService],
 })
 export class RestaurantsModule {}
