@@ -6,29 +6,16 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
-import { Subcategory } from '../../categories/entities/subcategory.entity';
+import { Subcategory } from '../../subcategories/entities/subcategory.entity';
 import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { ItemTranslation } from './item-translation.entity';
-import { Tag } from './tag.entity';
-import { ExtraItem } from './extra-item.entity';
+import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
+import { Tag } from '../../tags/tag.entity';
 
 @Entity()
 export class Item {
   @PrimaryGeneratedColumn()
-  item_id: number;
-
-  @ManyToOne(() => Category, (category) => category.items, {
-    onDelete: 'CASCADE',
-  })
-  category: Category;
-
-  @ManyToOne(() => Subcategory, { onDelete: 'CASCADE' })
-  subcategory: Subcategory;
-
-  @ManyToOne(() => Restaurant, (restaurant) => restaurant.items, {
-    onDelete: 'CASCADE',
-  })
-  restaurant: Restaurant;
+  id: number;
 
   @Column({ length: 512 })
   image: string;
@@ -40,10 +27,24 @@ export class Item {
   discount: number;
 
   @Column()
+  order: number;
+
+  @Column()
   is_hide: boolean;
 
   @Column()
   is_available: boolean;
+
+  @ManyToOne(() => Category, (category) => category.items, {
+    onDelete: 'SET NULL',
+  })
+  category: Category;
+
+  @ManyToOne(() => Subcategory, { onDelete: 'SET NULL' })
+  subcategory: Subcategory;
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.items)
+  restaurant: Restaurant;
 
   @OneToMany(() => ItemTranslation, (translation) => translation.item)
   translations: ItemTranslation[];
