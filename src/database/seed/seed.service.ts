@@ -4,12 +4,14 @@ import { Injectable, Logger } from '@nestjs/common';
 
 // Entities
 import { Language } from '../../languages/entities/language.entity';
+// import { Category } from '../../categories/entities/category.entity';
+// import { CategoryTranslation } from '../../categories/entities/category-translation.entity';
 
 // Seed Data
 import * as seedData from './seed.data';
 
 // DTOs
-import { CreateLanguageDto } from 'src/languages/dto/language.dto';
+import { CreateLanguageDto } from '../../languages/dto/create-language.dto';
 
 // Helper function to seed entities
 async function seedEntities<T>(
@@ -43,32 +45,60 @@ export class Seeder {
     //  private readonly restaurantRepository: Repository<Restaurant>,
     //  @InjectRepository(RestaurantTranslation)
     //  private readonly restaurantTranslationRepository: Repository<RestaurantTranslation>,
-    //  @InjectRepository(Category)
-    //  private readonly categoryRepository: Repository<Category>,
-    //  @InjectRepository(CategoryTranslation)
-    //  private readonly categoryTranslationRepository: Repository<CategoryTranslation>,
+    // @InjectRepository(Category)
+    // private readonly categoryRepository: Repository<Category>,
+    // @InjectRepository(CategoryTranslation)
+    // private readonly categoryTranslationRepository: Repository<CategoryTranslation>,
   ) {}
 
   async seed() {
     try {
       await this.seedLanguages(seedData.languages);
+      // await this.seedCategories(seedData.categories);
+      // await this.seedCategoryTranslation(seedData.categoryTranslations);
     } catch (error) {
       this.logger.error('❌ Error during database seeding:', error.stack);
       throw error;
     }
   }
 
-  async seedLanguages(languages: CreateLanguageDto[]) {
+  async seedLanguages(seedData: CreateLanguageDto[]) {
     await seedEntities(
-      languages,
+      seedData,
       this.languageRepository,
-      (lang) => ({
-        language_name: lang.language_name,
-        language_code: lang.language_code,
+      (data) => ({
+        language_name: data.language_name,
+        language_code: data.language_code,
       }),
-      (lang) => lang.language_name,
+      (data) => data.language_name,
       'Language',
       this.logger,
     );
   }
+
+  // async seedCategories(seedData) {
+  //   await seedEntities(
+  //     seedData,
+  //     this.categoryRepository,
+  //     (data) => ({ id: data.id }),
+  //     (data) => String(data.id),
+  //     'Categories',
+  //     this.logger,
+  //   );
+  // }
+
+  // async seedCategoryTranslation(seedData) {
+  //   await seedEntities(
+  //     seedData,
+  //     this.categoryTranslationRepository,
+  //     (data) => ({
+  //       name: data.name,
+  //       language: { language_code: data.language.language_code },
+  //       category: { id: data.category.id },
+  //     }),
+  //     (data) => data.name,
+  //     'Category Translations',
+  //     this.logger,
+  //   );
+  // }
 }
