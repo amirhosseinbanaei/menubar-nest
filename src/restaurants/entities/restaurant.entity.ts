@@ -3,7 +3,9 @@ import { RestaurantTranslation } from './restaurant-translation.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Item } from '../../items/entities/item.entity';
 import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
-import { Tag } from 'src/tags/entities/tag.entity';
+import { Tag } from '../../tags/entities/tag.entity';
+import { TableReservation } from '../../reservations/entities/reservation.entity';
+import { RestaurantWorkingHours } from './restaurant-hours.entity';
 
 @Entity()
 export class Restaurant {
@@ -35,4 +37,10 @@ export class Restaurant {
 
   @OneToMany(() => Tag, (tag) => tag.restaurant)
   tags: Tag[];
+
+  @OneToMany(() => TableReservation, (reservation) => reservation.restaurant)
+  reservations: TableReservation[];
+
+  @OneToMany(() => RestaurantWorkingHours, (rw) => rw.restaurant)
+  workingHours: RestaurantWorkingHours[];
 }
