@@ -3,7 +3,7 @@ import * as path from 'path';
 import { BadRequestException } from '@nestjs/common';
 
 export async function DeleteUploadedFile(
-  fieldName: 'categories' | 'items' | 'company',
+  fieldName: 'categories' | 'items' | 'company' | 'tags' | 'extra-items',
   fileName: string,
 ) {
   const filePath = path.join(
