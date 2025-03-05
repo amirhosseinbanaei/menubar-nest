@@ -1,0 +1,56 @@
+meta {
+  name: Create Item
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/items
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "restaurant_id": 1,
+    "translations": [
+      {
+        "name": "پیتزا",
+        "language_code": "fa"
+      },
+      {
+        "name": "pizza",
+        "language_code": "en"
+      }
+    ],
+    "image": "https://google.com/image.png",
+    "order": 1,
+    "branch_id": 0
+  }
+}
+
+body:multipart-form {
+  restaurant_id: 1
+  branch_id: 0
+  category_id: 7
+  subcategory_id: 7
+  image: @file(/Users/amirhosseinbanaei/Desktop/photo_2025-02-04_11-51-29.jpg)
+  price: 30000
+  discount: 0
+  translations: '''
+    [
+      { 
+        "name": "a", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "c", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
+  is_hide: false
+  is_available: true
+}

@@ -1,11 +1,11 @@
 meta {
-  name: Update Category
+  name: Update Tag
   type: http
   seq: 5
 }
 
 patch {
-  url: {{BASE_URL}}/categories/12
+  url: {{BASE_URL}}/tags/8
   body: multipartForm
   auth: none
 }
@@ -30,9 +30,20 @@ body:json {
 }
 
 body:multipart-form {
-  translations: [{"name": "کباببب", "language": "fa"},{"name": "kebadsfasdfabbbkhkhejljlnn", "language": "en"}]
+  translations: '''
+    [
+      { 
+        "name": "aaتگ فارسی", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "tag aa", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
   ~restaurant_id: 1
-  ~branch_id: 0
-  ~order: 1
   ~image: @file(/Users/amirhosseinbanaei/Pictures/Myself/photo_2020-09-24_21-34-13.jpg)
 }

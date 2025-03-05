@@ -1,0 +1,49 @@
+meta {
+  name: Create Tag
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/tags
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "restaurant_id": 1,
+    "translations": [
+      {
+        "name": "پیتزا",
+        "language_code": "fa"
+      },
+      {
+        "name": "pizza",
+        "language_code": "en"
+      }
+    ],
+    "image": "https://google.com/image.png",
+    "order": 1,
+    "branch_id": 0
+  }
+}
+
+body:multipart-form {
+  restaurant_id: 1
+  translations: '''
+    [
+      { 
+        "name": "تگ فارسی", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "tag", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
+  image: @file(/Users/amirhosseinbanaei/Desktop/photo_2025-02-04_11-51-29.jpg)
+}

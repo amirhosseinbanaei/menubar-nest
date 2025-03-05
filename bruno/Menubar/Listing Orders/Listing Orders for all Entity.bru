@@ -1,24 +1,25 @@
 meta {
-  name: Update Category Orders
+  name: Listing Orders for all Entity
   type: http
-  seq: 6
+  seq: 1
 }
 
 put {
-  url: {{BASE_URL}}/categories
+  url: {{BASE_URL}}/listing-orders/items
   body: json
   auth: none
 }
 
 body:json {
   {
+  //   "category_id": 7,
     "orders": [
       {
-        "id": 7, 
+        "id": 8, 
         "order": 1
       },
       {
-        "id": 12, 
+        "id": 9, 
         "order": 2
       }
     ]

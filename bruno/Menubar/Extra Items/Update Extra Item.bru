@@ -1,11 +1,11 @@
 meta {
-  name: Update Category
+  name: Update Extra Item
   type: http
-  seq: 5
+  seq: 4
 }
 
 patch {
-  url: {{BASE_URL}}/categories/12
+  url: {{BASE_URL}}/extra-items/4
   body: multipartForm
   auth: none
 }
@@ -30,9 +30,23 @@ body:json {
 }
 
 body:multipart-form {
-  translations: [{"name": "کباببب", "language": "fa"},{"name": "kebadsfasdfabbbkhkhejljlnn", "language": "en"}]
+  price: 45
+  ~translations: '''
+    [
+      { 
+        "name": "aaa", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "ccc", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
+  ~image: @file(/Users/amirhosseinbanaei/Pictures/Myself/mySelf jamshidieh 1 - Copy.jpg)
   ~restaurant_id: 1
   ~branch_id: 0
-  ~order: 1
-  ~image: @file(/Users/amirhosseinbanaei/Pictures/Myself/photo_2020-09-24_21-34-13.jpg)
+  ~is_hide: false
 }
