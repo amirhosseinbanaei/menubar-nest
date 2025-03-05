@@ -10,5 +10,6 @@ import { TagTranslation } from './entities/tag-translation.entity';
   imports: [TypeOrmModule.forFeature([Language, Tag, TagTranslation])],
   controllers: [TagsController],
   providers: [TagsService],
+  exports: [TagsService],
 })
 export class TagsModule {}

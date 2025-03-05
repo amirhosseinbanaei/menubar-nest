@@ -22,10 +22,12 @@ export class TagTranslation {
   description: string;
 
   @ManyToOne(() => Tag, (tag) => tag.translations, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'tag_id' })
   tag: Tag;
 
   @ManyToOne(() => Language, (language) => language.tagTranslations, {
     onDelete: 'CASCADE',
+    eager: true,
   })
   @JoinColumn({ name: 'language' })
   language: Language;
