@@ -45,6 +45,15 @@ export class CreateItemDto {
 
   image?: string;
 
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  // @Type(() => Number)
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  tag_ids?: number[];
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateTranslationDto)

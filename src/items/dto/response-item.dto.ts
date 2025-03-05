@@ -2,6 +2,7 @@ import { Expose, Transform, Type } from 'class-transformer';
 import { DetailTranslationDto } from '../../languages/dto/translation.dto';
 import { SubCategoryResponseDto } from '../../subcategories/dto/response-subcategory.dto';
 import { CategoryResponseDto } from 'src/categories/dto/response-category.dto';
+import { TagResponseDto } from 'src/tags/dto/response-tag.dto';
 
 export class ItemResponseDto {
   @Expose()
@@ -22,10 +23,6 @@ export class ItemResponseDto {
   subcategory_id: number | null;
 
   @Expose()
-  @Type(() => DetailTranslationDto)
-  translations: DetailTranslationDto[];
-
-  @Expose()
   image: string;
 
   @Expose()
@@ -42,6 +39,14 @@ export class ItemResponseDto {
 
   @Expose()
   is_available: number;
+
+  @Expose()
+  @Type(() => DetailTranslationDto)
+  translations: DetailTranslationDto[];
+
+  @Expose()
+  @Type(() => TagResponseDto)
+  tags: TagResponseDto[];
 
   @Expose()
   created_at: Date;

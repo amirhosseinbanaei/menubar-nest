@@ -13,6 +13,8 @@ import { plainToInstance } from 'class-transformer';
 import { ItemResponseDto } from './dto/response-item.dto';
 import { DeleteUploadedFile } from 'src/common/utils/function.util';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { TagsService } from 'src/tags/tags.service';
+import { Tag } from 'src/tags/entities/tag.entity';
 
 @Injectable()
 export class ItemsService {
@@ -22,6 +24,7 @@ export class ItemsService {
     private readonly itemRepository: Repository<Item>,
     @InjectRepository(ItemTranslation)
     private readonly itemTranslationRepository: Repository<ItemTranslation>,
+    private readonly tagsService: TagsService,
   ) {}
 
   async create(createItemDto: CreateItemDto, imageName: string) {
@@ -95,7 +98,15 @@ export class ItemsService {
   ) {
     const relations = !options.relation
       ? []
-      : ['translations', 'translations.language', 'category', 'subcategory'];
+      : [
+          'translations',
+          'translations.language',
+          'category',
+          'subcategory',
+          'tags',
+          'tags.translations',
+          'tags.translations.language',
+        ];
 
     const items = await this.itemRepository.find({
       where: {
@@ -136,6 +147,13 @@ export class ItemsService {
             language_code: language,
           },
         },
+        // tags: {
+        //   translations: {
+        //     language: {
+        //       language_code: language,
+        //     },
+        //   },
+        // },
       },
       relations,
     });
@@ -168,6 +186,7 @@ export class ItemsService {
       category_id,
       is_available,
       is_hide,
+      tag_ids,
     } = updateItemDto;
 
     if (newImageFile) {
@@ -204,6 +223,19 @@ export class ItemsService {
           await this.itemTranslationRepository.save(itemTranslation);
         }),
       );
+    }
+
+    if (tag_ids) {
+      const tags = await Promise.all(
+        tag_ids.map(async (tagId) => {
+          const tag = await this.tagsService.findOne(tagId, undefined, {
+            relation: true,
+          });
+          if (!tag) return;
+          return tag as Tag;
+        }),
+      );
+      item.tags = tags;
     }
 
     if (price) item.price = price;

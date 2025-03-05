@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Subcategory } from '../../subcategories/entities/subcategory.entity';
@@ -49,9 +51,13 @@ export class Item {
   @OneToMany(() => ItemTranslation, (translation) => translation.item)
   translations: ItemTranslation[];
 
-  @OneToMany(() => Tag, (tag) => tag.item)
+  @ManyToMany(() => Tag, (tag) => tag.item, { onDelete: 'CASCADE' })
+  @JoinTable()
   tags: Tag[];
 
-  @OneToMany(() => ExtraItem, (extraItem) => extraItem.item)
+  @ManyToMany(() => ExtraItem, (extraItem) => extraItem.item, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable()
   extraItems: ExtraItem[];
 }

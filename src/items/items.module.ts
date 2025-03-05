@@ -11,9 +11,13 @@ import { Language } from '../languages/entities/language.entity';
 import { Item } from './entities/item.entity';
 import { ItemTranslation } from './entities/item-translation.entity';
 import { CheckQueryLanguageMiddleware } from 'src/common/middlewares/language.middleware';
+import { TagsModule } from 'src/tags/tags.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Language, Item, ItemTranslation])],
+  imports: [
+    TypeOrmModule.forFeature([Language, Item, ItemTranslation]),
+    TagsModule,
+  ],
   controllers: [ItemsController],
   providers: [ItemsService],
 })
