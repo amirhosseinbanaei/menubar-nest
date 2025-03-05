@@ -11,6 +11,10 @@ import { SubcategoriesModule } from './subcategories/subcategories.module';
 import { ListingOrdersModule } from './listing-orders/listing-orders.module';
 import { TagsModule } from './tags/tags.module';
 import { ExtraItemsModule } from './extra-items/extra-items.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { AdminsModule } from './admins/admins.module';
+import { ReservationsModule } from './reservations/reservations.module';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { ExtraItemsModule } from './extra-items/extra-items.module';
     ListingOrdersModule,
     TagsModule,
     ExtraItemsModule,
+    UsersModule,
+    AuthModule,
+    AdminsModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
