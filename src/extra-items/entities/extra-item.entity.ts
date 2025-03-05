@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { ExtraItemTranslation } from './extra-item-translation.entity';
@@ -12,10 +13,10 @@ import { Item } from '../../items/entities/item.entity';
 @Entity()
 export class ExtraItem {
   @PrimaryGeneratedColumn()
-  extra_item_id: number;
+  id: number;
 
-  @ManyToOne(() => Item, (item) => item.extraItems, { onDelete: 'CASCADE' })
-  item: Item;
+  @ManyToMany(() => Item, (item) => item.extraItems, { onDelete: 'CASCADE' })
+  item: Item[];
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.extraItems, {
     onDelete: 'CASCADE',
@@ -27,6 +28,9 @@ export class ExtraItem {
 
   @Column()
   price: number;
+
+  @Column()
+  is_hide: boolean;
 
   @OneToMany(() => ExtraItemTranslation, (translation) => translation.extraItem)
   translations: ExtraItemTranslation[];

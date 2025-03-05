@@ -1,26 +1,214 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateExtraItemDto } from './dto/create-extra-item.dto';
 import { UpdateExtraItemDto } from './dto/update-extra-item.dto';
+import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ExtraItem } from './entities/extra-item.entity';
+import { ExtraItemTranslation } from './entities/extra-item-translation.entity';
+import { executeTransaction } from 'src/common/utils/transaction.util';
+import { plainToInstance } from 'class-transformer';
+import { ExtraItemResponseDto } from './dto/response-extra-item.dto';
+import { DeleteUploadedFile } from 'src/common/utils/function.util';
 
 @Injectable()
 export class ExtraItemsService {
-  create(createExtraItemDto: CreateExtraItemDto) {
-    return 'This action adds a new extraItem';
+  constructor(
+    private dataSource: DataSource,
+    @InjectRepository(ExtraItem)
+    private readonly extraItemRepository: Repository<ExtraItem>,
+    @InjectRepository(ExtraItemTranslation)
+    private readonly extraItemTranslationRepository: Repository<ExtraItemTranslation>,
+  ) {}
+
+  async create(createExtraItemDto: CreateExtraItemDto, imageName: string) {
+    const { restaurant_id, branch_id, price, is_hide, translations } =
+      createExtraItemDto;
+
+    return await executeTransaction(this.dataSource, async (manager) => {
+      const duplicate = await Promise.all(
+        await manager.find(ExtraItemTranslation, {
+          where: translations.map((translation) => {
+            return {
+              name: translation.name,
+              language: { language_code: translation.language },
+            };
+          }),
+        }),
+      ).then((result) => {
+        return result.map((translation) => translation.name);
+      });
+
+      if (duplicate.length) {
+        throw new ConflictException({
+          status: 'error',
+          message: 'Extra item name already exists',
+          existing_names: duplicate,
+        });
+      }
+
+      const extraItem = await manager.save(ExtraItem, {
+        restaurant: { id: restaurant_id },
+        branch: { id: branch_id },
+        price,
+        is_hide,
+        image: imageName ? `https://localhost:4000/${imageName}` : null,
+      });
+
+      translations.forEach(async (extraItemTranslationData) => {
+        const { language, name } = extraItemTranslationData;
+        await manager.save(ExtraItemTranslation, {
+          name,
+          extraItem,
+          language: { language_code: language },
+        });
+      });
+
+      return { id: extraItem.id, ...createExtraItemDto };
+    });
   }
 
-  findAll() {
-    return `This action returns all extraItems`;
+  async findAll(
+    language?: string,
+    options?: {
+      relation?: boolean;
+      serialize?: boolean;
+    },
+  ) {
+    const relations = options?.relation
+      ? ['translations', 'translations.language']
+      : [];
+
+    const extraItems = await this.extraItemRepository.find({
+      where: {
+        translations: {
+          language: {
+            language_code: language,
+          },
+        },
+      },
+      relations,
+    });
+
+    if (options?.serialize)
+      return plainToInstance(ExtraItemResponseDto, extraItems, {
+        excludeExtraneousValues: true,
+      });
+
+    return extraItems;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} extraItem`;
+  async findOne(
+    id: number,
+    language?: string,
+    options?: {
+      relation?: boolean;
+      serialize?: boolean;
+    },
+  ) {
+    const relations = options?.relation
+      ? ['translations', 'translations.language']
+      : [];
+
+    const extraItem = await this.extraItemRepository.findOne({
+      where: {
+        id,
+        translations: {
+          language: {
+            language_code: language,
+          },
+        },
+      },
+      relations,
+    });
+
+    if (!extraItem)
+      throw new NotFoundException(`Extra item with ID ${id} not found.`);
+
+    if (options?.serialize)
+      return plainToInstance(ExtraItemResponseDto, extraItem, {
+        excludeExtraneousValues: true,
+      });
+
+    return extraItem;
   }
 
-  update(id: number, updateExtraItemDto: UpdateExtraItemDto) {
-    return `This action updates a #${id} extraItem`;
+  async update(
+    id: number,
+    updateExtraItemDto: UpdateExtraItemDto,
+    newImageFile?: Express.Multer.File,
+  ) {
+    const extraItem = (await this.findOne(id, undefined, {
+      relation: true,
+    })) as ExtraItem;
+
+    const { translations, price, is_hide } = updateExtraItemDto;
+
+    if (newImageFile) {
+      if (extraItem.image) {
+        const oldImageName = extraItem.image.split('/').pop();
+        await DeleteUploadedFile('extra-items', oldImageName);
+      }
+      extraItem.image = `https://localhost:4000/${newImageFile.filename}`;
+    }
+
+    if (price !== undefined) extraItem.price = price;
+    if (is_hide !== undefined) extraItem.is_hide = is_hide;
+
+    if (translations) {
+      await Promise.all(
+        translations.map(async (translation) => {
+          if (translation.name) {
+            const duplicate = await this.extraItemTranslationRepository.find({
+              where: {
+                name: translation.name,
+                language: { language_code: translation.language },
+              },
+            });
+
+            if (duplicate.length) {
+              throw new ConflictException({
+                status: 'error',
+                message: 'Extra item name already exists',
+                existing_names: duplicate,
+              });
+            }
+          }
+
+          const extraItemTranslation = extraItem.translations.find(
+            (t) => t.language.language_code === translation.language,
+          );
+
+          if (translation.name) extraItemTranslation.name = translation.name;
+
+          await this.extraItemTranslationRepository.save(extraItemTranslation);
+        }),
+      );
+    }
+
+    await this.extraItemRepository.save(extraItem);
+    return plainToInstance(ExtraItemResponseDto, extraItem, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} extraItem`;
+  async remove(id: number) {
+    const extraItem = await this.findOne(id, undefined, {
+      serialize: true,
+      relation: true,
+    });
+
+    if (!extraItem) return;
+
+    if (extraItem.image) {
+      const imageName = extraItem.image.split('/').pop();
+      await DeleteUploadedFile('extra-items', imageName);
+    }
+
+    await this.extraItemRepository.delete(id);
+    return extraItem;
   }
 }
