@@ -22,36 +22,30 @@ export class AuthService {
   ) {}
 
   private generateOtp(): string {
-    // Generate 4-digit OTP
     return Math.floor(1000 + Math.random() * 9000).toString();
   }
 
   async requestOtp(requestOtpDto: RequestOtpDto) {
     const { phone_number } = requestOtpDto;
 
-    // Find or create user
     let user = await this.usersService.findByPhone(phone_number);
     if (!user) {
       user = (await this.usersService.create({ phone_number })) as User;
     }
 
-    // Generate new OTP
     const otp = this.generateOtp();
-    const otpExpiry = new Date(Date.now() + 3 * 60000); // 3 minutes expiry
+    const otpExpiry = new Date(Date.now() + 3 * 60000);
 
-    // Save OTP to user
     await this.usersService.updateOtp(user.id, {
       otp,
       otp_expiry: otpExpiry,
     });
 
-    // TODO: Integrate with SMS service to send OTP
-    // await this.smsService.sendOtp(phone_number, otp);
-
     return {
       message: 'OTP sent successfully',
       // Return OTP in development environment only
-      ...(process.env.NODE_ENV === 'development' && { otp }),
+      // ...(process.env.NODE_ENV === 'development' && { otp }),
+      otp,
     };
   }
 
@@ -75,14 +69,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid OTP');
     }
 
-    // Clear OTP after successful verification
     await this.usersService.updateOtp(user.id, {
       otp: null,
       otp_expiry: null,
       is_verified: true,
     });
 
-    // Generate JWT token
     const payload = { sub: user.id, phone: user.phone_number };
     return {
       access_token: await this.jwtService.signAsync(payload),

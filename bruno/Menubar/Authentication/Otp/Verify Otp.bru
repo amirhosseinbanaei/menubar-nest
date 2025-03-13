@@ -1,0 +1,18 @@
+meta {
+  name: Verify Otp
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/auth/verify-otp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "phone_number": "09121234567",
+    "otp": "9274"
+  }
+}

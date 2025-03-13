@@ -3,7 +3,7 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 @Injectable()
 export class LanguageValidationPipe implements PipeTransform {
   transform(value: any) {
-    const allowedLanguages = ['en', 'fa'];
+    const allowedLanguages = ['en', 'fa', 'ar', 'fr'];
     let translations = value.translations;
 
     if (typeof translations === 'string') {

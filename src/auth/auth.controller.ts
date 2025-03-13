@@ -10,6 +10,7 @@ export class AuthController {
   @Post('request-otp')
   @HttpCode(HttpStatus.OK)
   requestOtp(@Body() requestOtpDto: RequestOtpDto) {
+    console.log(requestOtpDto);
     return this.authService.requestOtp(requestOtpDto);
   }
 

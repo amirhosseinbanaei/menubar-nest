@@ -53,7 +53,7 @@ export class CategoriesService {
 
       const category = await manager.save(Category, {
         restaurant: { id: restaurant_id },
-        image: `https://localhost:4000/${imageName}`,
+        image: `http://localhost:4000/uploads/categories/${imageName}`,
         order: newCategoryOrder + 1,
       });
 
@@ -79,7 +79,7 @@ export class CategoriesService {
     },
   ) {
     const relations = options?.relation
-      ? ['translations', 'translations.language', 'subcategory']
+      ? ['translations', 'translations.language', 'subcategories']
       : [];
 
     const category = await this.categoryRepository.findOne({
@@ -132,6 +132,9 @@ export class CategoriesService {
         },
       },
       relations,
+      order: {
+        order: 'asc',
+      },
     });
 
     if (options?.serialize)

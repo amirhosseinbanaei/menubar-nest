@@ -15,10 +15,12 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminsModule } from './admins/admins.module';
 import { ReservationsModule } from './reservations/reservations.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: './.env' }),
+    ConfigModule.forRoot({ envFilePath: './.env', isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -34,6 +36,14 @@ import { ReservationsModule } from './reservations/reservations.module';
       synchronize: true,
       autoLoadEntities: true,
       migrations: ['dist/database/migration/*{.ts,.js}'],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveStaticOptions: {
+        index: false,
+        extensions: ['jpg', 'jpeg', 'png', 'gif'],
+      },
+      serveRoot: '/uploads',
     }),
     RestaurantsModule,
     LanguagesModule,

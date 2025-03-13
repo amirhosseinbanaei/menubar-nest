@@ -21,6 +21,9 @@ export class SubCategoryInCategoryDto {
   id: number;
 
   @Expose()
+  order: number;
+
+  @Expose()
   @Type(() => TranslationDto)
   translations: TranslationDto[];
 

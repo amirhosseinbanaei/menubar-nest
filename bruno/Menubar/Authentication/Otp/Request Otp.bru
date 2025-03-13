@@ -1,0 +1,17 @@
+meta {
+  name: Request Otp
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/auth/request-otp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "phone_number": "09121234567"
+  }
+}
