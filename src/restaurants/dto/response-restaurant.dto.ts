@@ -1,4 +1,6 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
+import { LanguageDto } from 'src/languages/dto/language.dto';
+import { DetailTranslationDto } from 'src/languages/dto/translation.dto';
 
 class WorkingHourResponseDto {
   @Expose()
@@ -23,7 +25,51 @@ class SocialMediaResponseDto {
 }
 
 export class RestaurantResponseDto {
-  // ... existing restaurant fields
+  @Expose()
+  id: number;
+
+  @Expose()
+  logo: string;
+
+  @Expose()
+  created_at: Date;
+
+  @Expose()
+  @Type(() => DetailTranslationDto)
+  translations: DetailTranslationDto[];
+
+  @Expose()
+  @Type(() => WorkingHourResponseDto)
+  working_hours: WorkingHourResponseDto[];
+
+  @Expose()
+  @Type(() => SocialMediaResponseDto)
+  socials: SocialMediaResponseDto[];
+}
+
+export class RestaurantsResponseDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  logo: string;
+
+  @Expose()
+  created_at: Date;
+
+  @Expose()
+  @Type(() => LanguageDto)
+  @Transform(
+    ({ obj }) => obj.languages.map((l: LanguageDto) => l.language_code),
+    {
+      toPlainOnly: true,
+    },
+  )
+  languages: string[];
+
+  @Expose()
+  @Type(() => DetailTranslationDto)
+  translations: DetailTranslationDto[];
 
   @Expose()
   @Type(() => WorkingHourResponseDto)

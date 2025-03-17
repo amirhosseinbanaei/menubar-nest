@@ -1,25 +1,34 @@
 import {
   Controller,
   Get,
-  // Post,
-  // Body,
   Param,
   Delete,
-  // UseInterceptors,
-  // ClassSerializerInterceptor,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RestaurantsService } from './restaurants.service';
-// import { RestaurantsLanguageService } from './restaurant-language.service';
-// import { CreateRestaurantDto } from './dto/restaurant.dto';
+import { CreateRestaurantDto } from './dto/create-restaurant.dto';
+import { CustomFileInterceptor } from 'src/common/interceptors/file.interceptor';
+import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 
 @Controller('restaurants')
 export class RestaurantsController {
   constructor(private readonly restaurantsService: RestaurantsService) {}
 
-  // @Post()
-  // create(@Body() createRestaurantDto: CreateRestaurantDto) {
-  //   return this.restaurantsService.create(createRestaurantDto);
-  // }
+  @Post()
+  @UseInterceptors(
+    CustomFileInterceptor('logo', './uploads/companies', 'image'),
+  )
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createRestaurantDto: CreateRestaurantDto,
+  ) {
+    return this.restaurantsService.create(createRestaurantDto);
+  }
 
   // @Post('/languages')
   // @UseInterceptors(ClassSerializerInterceptor)
@@ -33,26 +42,25 @@ export class RestaurantsController {
 
   @Get()
   findAll() {
-    return this.restaurantsService.findAll();
+    return this.restaurantsService.findAll({ serialize: true });
   }
-
-  // @Get('/languages')
-  // findAllRestaurantLanguages() {
-  //   return this.restaurantLanguageService.findAllRestaurantLanguages();
-  // }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.restaurantsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.restaurantsService.findOne(id, { serialize: true });
   }
 
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateRestaurantDto: UpdateRestaurantDto,
-  // ) {
-  //   return this.restaurantsService.update(+id, updateRestaurantDto);
-  // }
+  @Patch(':id')
+  @UseInterceptors(
+    CustomFileInterceptor('logo', './uploads/companies', 'image'),
+  )
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateRestaurantDto: UpdateRestaurantDto,
+  ) {
+    return this.restaurantsService.update(id, updateRestaurantDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

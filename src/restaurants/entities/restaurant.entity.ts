@@ -1,11 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { RestaurantTranslation } from './restaurant-translation.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Item } from '../../items/entities/item.entity';
 import { ExtraItem } from '../../extra-items/entities/extra-item.entity';
 import { Tag } from '../../tags/entities/tag.entity';
 import { TableReservation } from '../../reservations/entities/reservation.entity';
 import { RestaurantWorkingHours } from './restaurant-hours.entity';
+import { Language } from 'src/languages/entities/language.entity';
+import { RestaurantInformation } from './restaurant-information.entity';
 
 @Entity()
 export class Restaurant {
@@ -18,11 +26,15 @@ export class Restaurant {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
+  @ManyToMany(() => Language, (language) => language.restaurantLanguages)
+  @JoinTable()
+  languages: Language[];
+
   @OneToMany(
-    () => RestaurantTranslation,
+    () => RestaurantInformation,
     (translation) => translation.restaurant,
   )
-  translations: RestaurantTranslation[];
+  translations: RestaurantInformation[];
 
   @OneToMany(() => Category, (category) => category.restaurant, {
     cascade: true,

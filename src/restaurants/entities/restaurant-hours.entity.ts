@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Restaurant } from './restaurant.entity';
 
 export enum WeekDay {
@@ -34,5 +40,6 @@ export class RestaurantWorkingHours {
   @ManyToOne(() => Restaurant, (r) => r.workingHours, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'restaurant_id' })
   restaurant: Restaurant;
 }
