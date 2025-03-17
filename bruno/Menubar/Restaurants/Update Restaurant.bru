@@ -1,0 +1,94 @@
+meta {
+  name: Update Restaurant
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{BASE_URL}}/restaurants/5
+  body: multipartForm
+  auth: none
+}
+
+body:json {
+  {
+    "restaurant_id": 1,
+    "translations": [
+      {
+        "name": "پیتزا",
+        "language_code": "fa"
+      },
+      {
+        "name": "pizza",
+        "language_code": "en"
+      }
+    ],
+    "image": "https://google.com/image.png",
+    "order": 1,
+    "branch_id": 0
+  }
+}
+
+body:multipart-form {
+  ~translations: '''
+    [
+      { 
+        "name": "amir", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "caman", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
+  ~logo: @file(/Users/amirhosseinbanaei/Desktop/photo_2025-02-04_11-51-29.jpg)
+  ~workingHours: '''
+     [
+        {
+          "day": "monday",
+          "open_time": "09:00",
+          "close_time": "22:00",
+          "is_open": true
+        },
+        {
+          "day": "tuesday",
+          "open_time": "09:00",
+          "close_time": "22:00",
+          "is_open": true
+        },
+        {
+          "day": "wednesday",
+          "open_time": "09:00",
+          "close_time": "22:00",
+          "is_open": true
+        },
+        {
+          "day": "thursday",
+          "open_time": "09:00",
+          "close_time": "22:00",
+          "is_open": true
+        },
+        {
+          "day": "friday",
+          "open_time": "09:00",
+          "close_time": "23:00",
+          "is_open": true
+        },
+        {
+          "day": "saturday",
+          "open_time": "10:00",
+          "close_time": "23:00",
+          "is_open": true
+        },
+        {
+          "day": "sunday",
+          "open_time": "10:00",
+          "close_time": "22:00",
+          "is_open": false
+        }
+    ]
+  '''
+}

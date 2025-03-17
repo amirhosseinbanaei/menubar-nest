@@ -1,19 +1,48 @@
 meta {
   name: Create Restaurant
   type: http
-  seq: 1
+  seq: 4
 }
 
 post {
-  url: {{BASE_URL}}/restaurants/
-  body: json
+  url: {{BASE_URL}}/restaurants
+  body: multipartForm
   auth: none
 }
 
 body:json {
   {
-    "name": "menubar",
-    "subscription_plan": "enterprise",
-    "logo_url": ""
+    "restaurant_id": 1,
+    "translations": [
+      {
+        "name": "پیتزا",
+        "language_code": "fa"
+      },
+      {
+        "name": "pizza",
+        "language_code": "en"
+      }
+    ],
+    "image": "https://google.com/image.png",
+    "order": 1,
+    "branch_id": 0
   }
+}
+
+body:multipart-form {
+  translations: '''
+    [
+      { 
+        "name": "a", 
+        "description": "آیتم 1",
+        "language": "fa"
+      },
+      { 
+        "name": "c", 
+        "description": "Item 1",
+        "language": "en"
+      }
+    ]
+  '''
+  logo: @file(/Users/amirhosseinbanaei/Desktop/photo_2025-02-04_11-51-29.jpg)
 }
