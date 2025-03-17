@@ -1,10 +1,11 @@
 import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
-import { RestaurantTranslation } from '../../restaurants/entities/restaurant-translation.entity';
+import { RestaurantInformation } from '../../restaurants/entities/restaurant-information.entity';
 import { CategoryTranslation } from '../../categories/entities/category-translation.entity';
 import { ItemTranslation } from '../../items/entities/item-translation.entity';
 import { Subcategory } from '../../subcategories/entities/subcategory.entity';
 import { ExtraItemTranslation } from '../../extra-items/entities/extra-item-translation.entity';
 import { TagTranslation } from 'src/tags/entities/tag-translation.entity';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 @Entity()
 export class Language {
@@ -14,8 +15,11 @@ export class Language {
   @Column({ length: 100, unique: true })
   language_name: string;
 
-  @OneToMany(() => RestaurantTranslation, (translation) => translation.language)
-  restaurantTranslations: RestaurantTranslation[];
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.languages)
+  restaurantLanguages: Restaurant[];
+
+  @OneToMany(() => RestaurantInformation, (translation) => translation.language)
+  restaurantInformation: RestaurantInformation[];
 
   @OneToMany(() => CategoryTranslation, (translation) => translation.language)
   categoryTranslations: CategoryTranslation[];
