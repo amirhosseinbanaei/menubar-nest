@@ -30,7 +30,7 @@ export class ExtraItem {
   price: number;
 
   @Column()
-  is_hide: boolean;
+  is_hidden: boolean;
 
   @OneToMany(() => ExtraItemTranslation, (translation) => translation.extraItem)
   translations: ExtraItemTranslation[];

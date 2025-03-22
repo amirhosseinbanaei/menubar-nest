@@ -20,6 +20,7 @@ import { TagsModule } from 'src/tags/tags.module';
   ],
   controllers: [ItemsController],
   providers: [ItemsService],
+  exports: [ItemsService],
 })
 export class ItemsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -25,7 +25,7 @@ export class ExtraItemsService {
   ) {}
 
   async create(createExtraItemDto: CreateExtraItemDto, imageName: string) {
-    const { restaurant_id, branch_id, price, is_hide, translations } =
+    const { restaurant_id, branch_id, price, is_hidden, translations } =
       createExtraItemDto;
 
     return await executeTransaction(this.dataSource, async (manager) => {
@@ -54,8 +54,10 @@ export class ExtraItemsService {
         restaurant: { id: restaurant_id },
         branch: { id: branch_id },
         price,
-        is_hide,
-        image: imageName ? `https://localhost:4000/${imageName}` : null,
+        is_hidden,
+        image: imageName
+          ? `${process.env.FILE_URL}/extra-items/${imageName}`
+          : `${process.env.FILE_URL}/defaults/category.png`,
       });
 
       translations.forEach(async (extraItemTranslationData) => {
@@ -145,18 +147,18 @@ export class ExtraItemsService {
       relation: true,
     })) as ExtraItem;
 
-    const { translations, price, is_hide } = updateExtraItemDto;
+    const { translations, price, is_hidden } = updateExtraItemDto;
 
     if (newImageFile) {
-      if (extraItem.image) {
-        const oldImageName = extraItem.image.split('/').pop();
-        await DeleteUploadedFile('extra-items', oldImageName);
+      if (!extraItem.image.includes('defaults')) {
+        const oldIMageName = extraItem.image.split('/').pop();
+        await DeleteUploadedFile('extra-items', oldIMageName);
       }
-      extraItem.image = `https://localhost:4000/${newImageFile.filename}`;
+      extraItem.image = `${process.env.FILE_URL}/extra-items/${newImageFile.filename}`;
     }
 
     if (price !== undefined) extraItem.price = price;
-    if (is_hide !== undefined) extraItem.is_hide = is_hide;
+    if (is_hidden !== undefined) extraItem.is_hidden = is_hidden;
 
     if (translations) {
       await Promise.all(
@@ -203,7 +205,7 @@ export class ExtraItemsService {
 
     if (!extraItem) return;
 
-    if (extraItem.image) {
+    if (!extraItem.image.includes('defaults')) {
       const imageName = extraItem.image.split('/').pop();
       await DeleteUploadedFile('extra-items', imageName);
     }

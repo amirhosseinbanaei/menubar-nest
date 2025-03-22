@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
-import { DataSource, MoreThan, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, MoreThan, Repository } from 'typeorm';
 import { Item } from './entities/item.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemTranslation } from './entities/item-translation.entity';
@@ -31,12 +31,12 @@ export class ItemsService {
     const {
       restaurant_id,
       category_id,
-      subcategory_id,
       translations,
       price,
       discount,
       is_available,
-      is_hide,
+      is_hidden,
+      subcategory_id,
     } = createItemDto;
 
     return await executeTransaction(this.dataSource, async (manager) => {
@@ -62,16 +62,24 @@ export class ItemsService {
       }
 
       const newItemOrder = await manager.count(Item);
-
+      console.log(subcategory_id);
       const item = await manager.save(Item, {
         restaurant: { id: restaurant_id },
         category: { id: category_id },
-        subcategory: { id: subcategory_id },
-        image: `https://localhost:4000/${imageName}`,
+        // ...(createItemDto?.subcategory_id
+        //   ? { subcategory: { id: createItemDto.subcategory_id } }
+        //   : null),
+        // subcategory: createItemDto.subcategory_id
+        //   ? { id: createItemDto.subcategory_id }
+        //   : null,
+        subcategory: { id: subcategory_id ?? null },
+        image: imageName
+          ? `${process.env.FILE_URL}/items/${imageName}`
+          : `${process.env.FILE_URL}/defaults/item.png`,
         order: newItemOrder + 1,
         price,
         discount,
-        is_hide,
+        is_hidden,
         is_available,
       });
 
@@ -94,6 +102,7 @@ export class ItemsService {
     options?: {
       relation?: boolean;
       serialize?: boolean;
+      extraWhereOption?: FindOptionsWhere<Item>;
     },
   ) {
     const relations = !options.relation
@@ -115,6 +124,7 @@ export class ItemsService {
             language_code: language,
           },
         },
+        ...options?.extraWhereOption,
       },
       relations,
     });
@@ -185,14 +195,16 @@ export class ItemsService {
       subcategory_id,
       category_id,
       is_available,
-      is_hide,
+      is_hidden,
       tag_ids,
     } = updateItemDto;
 
     if (newImageFile) {
-      const oldIMageName = item.image.split('/').pop();
-      await DeleteUploadedFile('items', oldIMageName);
-      item.image = `https://localhost:4000/${newImageFile.filename}`;
+      if (!item.image.includes('defaults')) {
+        const oldIMageName = item.image.split('/').pop();
+        await DeleteUploadedFile('items', oldIMageName);
+      }
+      item.image = `${process.env.FILE_URL}/items/${newImageFile.filename}`;
     }
 
     if (translations) {
@@ -205,6 +217,7 @@ export class ItemsService {
                 language_code: translation.language,
               },
             },
+            relations: ['language'],
           });
 
           if (duplicate.length) {
@@ -238,12 +251,20 @@ export class ItemsService {
       item.tags = tags;
     }
 
+    if (is_hidden !== undefined) item.is_hidden = is_hidden;
+    if (is_available !== undefined) item.is_available = is_available;
     if (price) item.price = price;
-    if (is_hide) item.is_hide = is_hide;
     if (discount) item.discount = discount;
     if (category_id) item.category.id = category_id;
-    if (is_available) item.is_available = is_available;
-    if (subcategory_id) item.subcategory.id = subcategory_id;
+    if (subcategory_id) {
+      if (!item.subcategory) {
+        item.subcategory = { id: subcategory_id } as any;
+      } else {
+        item.subcategory.id = subcategory_id;
+      }
+    } else {
+      item.subcategory.id = null;
+    }
 
     await this.itemRepository.save(item);
 
@@ -259,8 +280,11 @@ export class ItemsService {
     });
 
     if (!item) return;
-    const imageName = item.image.split('/').pop();
-    await DeleteUploadedFile('items', imageName);
+
+    if (!item.image.includes('defaults')) {
+      const imageName = item.image.split('/').pop();
+      await DeleteUploadedFile('items', imageName);
+    }
 
     return await executeTransaction(this.dataSource, async (manager) => {
       const itemsWithHigherOrder = await manager.find(Item, {

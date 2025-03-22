@@ -17,13 +17,14 @@ import { AdminsModule } from './admins/admins.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MenusModule } from './menus/menus.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: './.env', isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: '127.0.0.1',
       port: 3306,
       username: 'root',
       password: 'Mysqlpassword1',
@@ -57,6 +58,7 @@ import { join } from 'path';
     AuthModule,
     AdminsModule,
     ReservationsModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

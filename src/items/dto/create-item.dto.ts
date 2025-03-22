@@ -21,9 +21,9 @@ export class CreateItemDto {
   @Type(() => Number)
   category_id: number;
 
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  @IsOptional()
   subcategory_id?: number;
 
   @IsNumber()
@@ -35,14 +35,15 @@ export class CreateItemDto {
   @IsOptional()
   discount?: number;
 
+  @Transform(({ value }) => JSON.parse(value))
   @IsBoolean()
-  @Type(() => Boolean)
-  is_hide: boolean;
+  is_hidden: boolean;
 
+  @Transform(({ value }) => JSON.parse(value))
   @IsBoolean()
-  @Type(() => Boolean)
   is_available: boolean;
 
+  @IsOptional()
   image?: string;
 
   @IsOptional()

@@ -26,17 +26,21 @@ export class CategoriesController {
     CustomFileInterceptor('image', './uploads/categories', 'image'),
   )
   create(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Body(new LanguageValidationPipe()) createCategoryDto: CreateCategoryDto,
   ) {
-    return this.categoriesService.create(createCategoryDto, file.filename);
+    return this.categoriesService.create(createCategoryDto, file?.filename);
   }
 
   @Get()
-  findAll(@Query('lang') language: string | undefined) {
+  findAll(
+    @Query('lang') language: string | undefined,
+    @Query('details') details: boolean | undefined,
+  ) {
     return this.categoriesService.findAll(language, {
       relation: true,
       serialize: true,
+      details,
     });
   }
 
