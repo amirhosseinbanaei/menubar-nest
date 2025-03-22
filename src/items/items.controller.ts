@@ -14,7 +14,6 @@ import {
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { CustomFileInterceptor } from 'src/common/interceptors/file.interceptor';
-import { LanguageValidationPipe } from 'src/common/pipes/language.pipe';
 import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')
@@ -24,10 +23,10 @@ export class ItemsController {
   @Post()
   @UseInterceptors(CustomFileInterceptor('image', './uploads/items', 'image'))
   create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body(new LanguageValidationPipe()) createItemDto: CreateItemDto,
+    @Body() createItemDto: CreateItemDto,
+    @UploadedFile() file: Express.Multer.File | undefined,
   ) {
-    return this.itemsService.create(createItemDto, file.filename);
+    return this.itemsService.create(createItemDto, file?.filename);
   }
 
   @Get()
@@ -54,9 +53,9 @@ export class ItemsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
-    @Body() updateCategoryDto: UpdateItemDto,
+    @Body() updateItemDto: UpdateItemDto,
   ) {
-    return this.itemsService.update(id, updateCategoryDto, file);
+    return this.itemsService.update(id, updateItemDto, file);
   }
 
   @Delete(':id')

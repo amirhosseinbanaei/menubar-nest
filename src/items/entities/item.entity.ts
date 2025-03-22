@@ -32,7 +32,7 @@ export class Item {
   order: number;
 
   @Column()
-  is_hide: boolean;
+  is_hidden: boolean;
 
   @Column()
   is_available: boolean;
@@ -42,8 +42,11 @@ export class Item {
   })
   category: Category;
 
-  @ManyToOne(() => Subcategory, { onDelete: 'SET NULL' })
-  subcategory: Subcategory;
+  @ManyToOne(() => Subcategory, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  subcategory: Subcategory | null;
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.items)
   restaurant: Restaurant;

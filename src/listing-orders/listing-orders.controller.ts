@@ -11,7 +11,6 @@ export class ListingOrdersController {
     @Param('entity') entity: string,
     @Body() listingOrderDto: ListingOrderDto,
   ) {
-    console.log(listingOrderDto);
     return this.listingOrdersService.updateOrders(entity, listingOrderDto);
   }
 }

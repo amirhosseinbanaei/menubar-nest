@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -108,21 +109,29 @@ export class SubcategoriesService {
   }
 
   async findAll(
+    categoryId?: string,
     language?: string,
     options?: {
       serialize?: boolean;
     },
   ) {
+    if (!categoryId) throw new BadRequestException('Category ID is required');
     const subcategory = await this.subcategoryRepository.find({
       where: {
+        category: { id: +categoryId },
         translations: {
           language: {
             language_code: language,
           },
         },
       },
-      relations: ['translations', 'translations.language'],
+      relations: ['translations', 'translations.language', 'category'],
     });
+
+    // if (!subcategory.length)
+    //   throw new NotFoundException(
+    //     `Subcategories with Category ID ${categoryId} not found.`,
+    //   );
 
     if (options?.serialize)
       return plainToInstance(SubCategoryResponseDto, subcategory, {

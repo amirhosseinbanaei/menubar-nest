@@ -35,7 +35,7 @@ export class ItemResponseDto {
   discount: number;
 
   @Expose()
-  is_hide: number;
+  is_hidden: number;
 
   @Expose()
   is_available: number;

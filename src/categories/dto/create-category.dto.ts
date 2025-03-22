@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { CreateTranslationDto } from '../../languages/dto/create-translation.dto';
 
@@ -11,6 +11,7 @@ export class CreateCategoryDto {
   @Type(() => Number)
   branch_id: number;
 
+  @IsOptional()
   image?: string;
 
   @IsArray()

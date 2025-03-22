@@ -26,10 +26,10 @@ export class ExtraItemsController {
     CustomFileInterceptor('image', './uploads/extra-items', 'image'),
   )
   create(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Body(new LanguageValidationPipe()) createExtraItemDto: CreateExtraItemDto,
   ) {
-    return this.extraItemsService.create(createExtraItemDto, file.filename);
+    return this.extraItemsService.create(createExtraItemDto, file?.filename);
   }
 
   @Get()

@@ -17,7 +17,7 @@ export class CreateExtraItemDto {
 
   @IsBoolean()
   @Type(() => Boolean)
-  is_hide: boolean;
+  is_hidden: boolean;
 
   image?: string;
 

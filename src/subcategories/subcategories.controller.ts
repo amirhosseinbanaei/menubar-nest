@@ -31,8 +31,11 @@ export class SubcategoriesController {
   }
 
   @Get()
-  findAll(@Query('lang') language: string | undefined) {
-    return this.subcategoriesService.findAll(language, {
+  findAll(
+    @Query('category_id') categoryId: string | undefined,
+    @Query('lang') language: string | undefined,
+  ) {
+    return this.subcategoriesService.findAll(categoryId, language, {
       serialize: true,
     });
   }

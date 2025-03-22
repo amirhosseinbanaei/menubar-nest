@@ -24,7 +24,7 @@ export class CategoriesService {
     private readonly categoryTranslationRepository: Repository<CategoryTranslation>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto, imageName: string) {
+  async create(createCategoryDto: CreateCategoryDto, imageName?: string) {
     const { restaurant_id, translations } = createCategoryDto;
 
     return await executeTransaction(this.dataSource, async (manager) => {
@@ -53,7 +53,9 @@ export class CategoriesService {
 
       const category = await manager.save(Category, {
         restaurant: { id: restaurant_id },
-        image: `http://localhost:4000/uploads/categories/${imageName}`,
+        image: imageName
+          ? `${process.env.FILE_URL}/categories/${imageName}`
+          : `${process.env.FILE_URL}/defaults/category.png`,
         order: newCategoryOrder + 1,
       });
 
@@ -79,7 +81,12 @@ export class CategoriesService {
     },
   ) {
     const relations = options?.relation
-      ? ['translations', 'translations.language', 'subcategories']
+      ? [
+          'translations',
+          'translations.language',
+          'subcategories',
+          'subcategories.translations',
+        ]
       : [];
 
     const category = await this.categoryRepository.findOne({
@@ -117,11 +124,15 @@ export class CategoriesService {
     options?: {
       relation?: boolean;
       serialize?: boolean;
+      details?: boolean;
     },
   ) {
     const relations = options?.relation
       ? ['translations', 'translations.language']
       : [];
+
+    if (options?.details)
+      relations.push(...['subcategories', 'subcategories.translations']);
 
     const categories = await this.categoryRepository.find({
       where: {
@@ -130,11 +141,17 @@ export class CategoriesService {
             language_code: language,
           },
         },
+        ...(options?.details && {
+          subcategories: {
+            translations: {
+              language: {
+                language_code: language,
+              },
+            },
+          },
+        }),
       },
       relations,
-      order: {
-        order: 'asc',
-      },
     });
 
     if (options?.serialize)
@@ -157,10 +174,11 @@ export class CategoriesService {
     const { translations } = updateCategoryDto;
 
     if (newImageFile) {
-      const oldIMageName = category.image.split('/').pop();
-      console.log(oldIMageName);
-      await DeleteUploadedFile('categories', oldIMageName);
-      category.image = `https://localhost:4000/${newImageFile.filename}`;
+      if (!category.image.includes('defaults')) {
+        const oldIMageName = category.image.split('/').pop();
+        await DeleteUploadedFile('categories', oldIMageName);
+      }
+      category.image = `${process.env.FILE_URL}/categories/${newImageFile.filename}`;
     }
 
     if (translations) {
@@ -202,8 +220,11 @@ export class CategoriesService {
     });
 
     if (!category) return;
-    const imageName = category.image.split('/').pop();
-    await DeleteUploadedFile('categories', imageName);
+
+    if (!category.image.includes('defaults')) {
+      const imageName = category.image.split('/').pop();
+      await DeleteUploadedFile('categories', imageName);
+    }
 
     return await executeTransaction(this.dataSource, async (manager) => {
       const categoriesWithHigherOrder = await manager.find(Category, {

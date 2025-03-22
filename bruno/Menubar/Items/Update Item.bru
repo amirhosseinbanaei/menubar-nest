@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: {{BASE_URL}}/items/10
+  url: {{BASE_URL}}/items/9
   body: multipartForm
   auth: none
 }
@@ -30,7 +30,9 @@ body:json {
 }
 
 body:multipart-form {
-  tag_ids: [5]
+  is_hidden: true
+  is_available: false
+  ~tag_ids: [5]
   ~translations: '''
     [
       { 
@@ -52,6 +54,4 @@ body:multipart-form {
   ~category_id: 7
   ~subcategory_id: 7
   ~discount: 0
-  ~is_hide: false
-  ~is_available: true
 }

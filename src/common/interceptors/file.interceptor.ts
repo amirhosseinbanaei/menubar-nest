@@ -13,6 +13,11 @@ export function CustomFileInterceptor(
     storage: diskStorage({
       destination: uploadPath,
       filename: (req, file, callback) => {
+        if (!file) {
+          callback(null, null);
+          return;
+        }
+
         const ext = extname(file.originalname);
         const randomName = (): string => {
           const uniqueSuffix =
@@ -25,6 +30,11 @@ export function CustomFileInterceptor(
       },
     }),
     fileFilter: (req, file, callback) => {
+      if (!file) {
+        callback(null, true);
+        return;
+      }
+
       switch (fileFilter) {
         case 'image':
           if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
