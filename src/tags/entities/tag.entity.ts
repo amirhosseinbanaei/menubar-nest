@@ -4,13 +4,12 @@ import {
   Column,
   ManyToOne,
   OneToMany,
-  ManyToMany,
 } from 'typeorm';
+import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 import { TagTranslation } from './tag-translation.entity';
 import { Item } from '../../items/entities/item.entity';
-import { Restaurant } from '../../restaurants/entities/restaurant.entity';
 
-@Entity()
+@Entity('tags')
 export class Tag {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,14 +17,17 @@ export class Tag {
   @Column({ length: 512 })
   image: string;
 
+  @Column({ default: true })
+  is_active: boolean;
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.tags)
+  restaurant: Restaurant;
+
   @OneToMany(() => TagTranslation, (translation) => translation.tag, {
     eager: true,
   })
   translations: TagTranslation[];
 
-  @ManyToMany(() => Item, (item) => item.tags, { onDelete: 'CASCADE' })
-  item: Item[];
-
-  @ManyToOne(() => Restaurant, (restaurant) => restaurant.items)
-  restaurant: Restaurant;
+  @OneToMany(() => Item, (item) => item.tags)
+  items: Item[];
 }

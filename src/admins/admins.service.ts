@@ -11,7 +11,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { plainToInstance } from 'class-transformer';
 import { AdminResponseDto } from './dto/response-admin.dto';
-import { AdminRole } from './enum/admin-role.enum';
+import { Role } from './enum/admin-role.enum';
 
 @Injectable()
 export class AdminsService {
@@ -21,10 +21,7 @@ export class AdminsService {
   ) {}
 
   async create(createAdminDto: CreateAdminDto) {
-    if (
-      createAdminDto.role === AdminRole.ADMIN &&
-      !createAdminDto.national_number
-    ) {
+    if (createAdminDto.role === Role.Admin && !createAdminDto.national_number) {
       throw new BadRequestException(
         'National number is required for admin role',
       );

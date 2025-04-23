@@ -26,8 +26,8 @@ export class TagTranslation {
   tag: Tag;
 
   @ManyToOne(() => Language, (language) => language.tagTranslations, {
-    onDelete: 'CASCADE',
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'language' })
   language: Language;

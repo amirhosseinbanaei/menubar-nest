@@ -33,10 +33,15 @@ export class ExtraItemsController {
   }
 
   @Get()
-  findAll(@Query('lang') language: string | undefined) {
+  findAll(
+    @Query('lang') language: string | undefined,
+    @Query('item_id') itemId?: number,
+  ) {
     return this.extraItemsService.findAll(language, {
       serialize: true,
       relation: true,
+      filterByItemId: itemId,
+      extraRelation: ['item'],
     });
   }
 

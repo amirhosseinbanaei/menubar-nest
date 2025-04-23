@@ -3,12 +3,11 @@ import {
   IsEmail,
   Length,
   Matches,
-  IsPhoneNumber,
   IsEnum,
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { AdminRole } from '../enum/admin-role.enum';
+import { Role } from 'src/admins/enum/admin-role.enum';
 
 export class CreateAdminDto {
   @IsString()
@@ -31,7 +30,7 @@ export class CreateAdminDto {
   })
   password: string;
 
-  @ValidateIf((o) => o.role === AdminRole.ADMIN)
+  @ValidateIf((o) => o.role === Role.Admin)
   @IsString()
   @Length(10, 10)
   @Matches(/^\d+$/, {
@@ -39,12 +38,12 @@ export class CreateAdminDto {
   })
   national_number?: string;
 
-  @IsPhoneNumber()
+  @IsString()
   @Transform(({ value }) => {
     return value?.replace(/\s+/g, '').replace(/[-()+]/g, '');
   })
   phone_number: string;
 
-  @IsEnum(AdminRole)
-  role: AdminRole;
+  @IsEnum(Role)
+  role: Role;
 }

@@ -5,7 +5,12 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/menu
+  url: {{BASE_URL}}/menu?restaurant_id=1&lang=fa
   body: none
-  auth: none
+  auth: bearer
+}
+
+params:query {
+  restaurant_id: 1
+  lang: fa
 }

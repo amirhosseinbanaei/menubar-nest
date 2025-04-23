@@ -2,16 +2,19 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { User } from 'src/users/entities/user.entity';
-import { LoginAdminDto } from './dto/login-admin.dto';
+import { AdminLoginDto } from './dto/admin-login.dto';
 import { AdminsService } from 'src/admins/admins.service';
 import { plainToInstance } from 'class-transformer';
 import { AdminResponseDto } from 'src/admins/dto/response-admin.dto';
+import { CreateAdminDto } from 'src/admins/dto/create-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -104,10 +107,10 @@ export class AuthService {
     }
   }
 
-  async loginAdmin(loginAdminDto: LoginAdminDto) {
+  async adminLogin(adminLoginDto: AdminLoginDto) {
     const admin = await this.validateAdmin(
-      loginAdminDto.email,
-      loginAdminDto.password,
+      adminLoginDto.email,
+      adminLoginDto.password,
     );
 
     const payload = { sub: admin.id, email: admin.email };
@@ -116,5 +119,25 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
       admin,
     };
+  }
+
+  async adminRegister(createAdminDto: CreateAdminDto) {
+    try {
+      const admin = await this.adminService.create(createAdminDto);
+
+      const payload = { sub: admin.id, email: admin.email };
+
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+        admin,
+      };
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;
+      } else if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to register admin');
+    }
   }
 }

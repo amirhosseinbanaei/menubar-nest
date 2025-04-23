@@ -1,0 +1,15 @@
+meta {
+  name: Delete Color Palette
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{BASE_URL}}/color-palettes/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 8
+}

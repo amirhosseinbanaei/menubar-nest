@@ -15,6 +15,7 @@ import { DeleteUploadedFile } from 'src/common/utils/function.util';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { TagsService } from 'src/tags/tags.service';
 import { Tag } from 'src/tags/entities/tag.entity';
+import { ExtraItem } from 'src/extra-items/entities/extra-item.entity';
 
 @Injectable()
 export class ItemsService {
@@ -37,6 +38,8 @@ export class ItemsService {
       is_available,
       is_hidden,
       subcategory_id,
+      tag_ids,
+      extra_item_ids,
     } = createItemDto;
 
     return await executeTransaction(this.dataSource, async (manager) => {
@@ -62,16 +65,10 @@ export class ItemsService {
       }
 
       const newItemOrder = await manager.count(Item);
-      console.log(subcategory_id);
-      const item = await manager.save(Item, {
+
+      const itemData = {
         restaurant: { id: restaurant_id },
         category: { id: category_id },
-        // ...(createItemDto?.subcategory_id
-        //   ? { subcategory: { id: createItemDto.subcategory_id } }
-        //   : null),
-        // subcategory: createItemDto.subcategory_id
-        //   ? { id: createItemDto.subcategory_id }
-        //   : null,
         subcategory: { id: subcategory_id ?? null },
         image: imageName
           ? `${process.env.FILE_URL}/items/${imageName}`
@@ -81,7 +78,45 @@ export class ItemsService {
         discount,
         is_hidden,
         is_available,
-      });
+        tags: [] as Tag[], // Initialize tags as an empty array
+        extraItems: [] as ExtraItem[], // Initialize extraItems as an empty array
+      };
+
+      if (tag_ids.length) {
+        const tags = await Promise.all(
+          tag_ids.map(async (tagId) => {
+            const tag = await manager.findOne(Tag, {
+              where: { id: tagId },
+            });
+
+            if (!tag)
+              throw new NotFoundException(`Tag with ${tagId} not found !`);
+
+            return tag;
+          }),
+        );
+        itemData.tags = tags; // Assign tags to itemData.tags
+      }
+
+      if (extra_item_ids.length) {
+        const extraItems = await Promise.all(
+          extra_item_ids.map(async (extraItemId) => {
+            const extraItem = await manager.findOne(ExtraItem, {
+              where: { id: extraItemId },
+            });
+
+            if (!extraItem)
+              throw new NotFoundException(
+                `ExtraItem with ${extraItemId} not found !`,
+              );
+
+            return extraItem;
+          }),
+        );
+        itemData.extraItems = extraItems; // Assign extraItems to itemData.extraItems
+      }
+
+      const item = await manager.save(Item, itemData);
 
       translations.forEach(async (itemTranslationData) => {
         const { language, name, description } = itemTranslationData;
@@ -93,7 +128,7 @@ export class ItemsService {
         });
       });
 
-      return { id: item.id, ...createItemDto };
+      // return { id: item.id, ...createItemDto };
     });
   }
 
@@ -103,19 +138,14 @@ export class ItemsService {
       relation?: boolean;
       serialize?: boolean;
       extraWhereOption?: FindOptionsWhere<Item>;
+      extraRelation?: string[];
     },
   ) {
     const relations = !options.relation
       ? []
-      : [
-          'translations',
-          'translations.language',
-          'category',
-          'subcategory',
-          'tags',
-          'tags.translations',
-          'tags.translations.language',
-        ];
+      : ['translations', 'translations.language', 'category', 'subcategory'];
+
+    if (options?.extraRelation) relations.push(...options.extraRelation);
 
     const items = await this.itemRepository.find({
       where: {
@@ -146,7 +176,16 @@ export class ItemsService {
     },
   ) {
     const relations = options.relation
-      ? ['translations', 'translations.language', 'category', 'subcategory']
+      ? [
+          'translations',
+          'translations.language',
+          'category',
+          'subcategory',
+          'tags',
+          'tags.translations.language',
+          'extraItems',
+          'extraItems.translations.language',
+        ]
       : [];
 
     const item = await this.itemRepository.findOne({
@@ -263,7 +302,7 @@ export class ItemsService {
         item.subcategory.id = subcategory_id;
       }
     } else {
-      item.subcategory.id = null;
+      item.subcategory = null;
     }
 
     await this.itemRepository.save(item);

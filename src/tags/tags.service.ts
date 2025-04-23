@@ -51,7 +51,9 @@ export class TagsService {
 
       const tag = await manager.save(Tag, {
         restaurant: { id: restaurant_id },
-        image: `https://localhost:4000/${imageName}`,
+        image: imageName
+          ? `${process.env.FILE_URL}/tags/${imageName}`
+          : `${process.env.FILE_URL}/defaults/tag.png`,
       });
 
       translations.forEach(async (tagTranslationData) => {
@@ -144,9 +146,11 @@ export class TagsService {
     const { translations } = updateTagDto;
 
     if (newImageFile) {
-      const oldIMageName = category.image.split('/').pop();
-      await DeleteUploadedFile('tags', oldIMageName);
-      category.image = `https://localhost:4000/${newImageFile.filename}`;
+      if (!category.image.includes('defaults')) {
+        const oldImageName = category.image.split('/').pop();
+        await DeleteUploadedFile('tags', oldImageName);
+      }
+      category.image = `${process.env.FILE_URL}/tags/${newImageFile.filename}`;
     }
 
     if (translations) {
@@ -195,8 +199,10 @@ export class TagsService {
     });
 
     if (!tag) return;
-    const imageName = tag.image.split('/').pop();
-    await DeleteUploadedFile('tags', imageName);
+    if (!tag.image.includes('defaults')) {
+      const imageName = tag.image.split('/').pop();
+      await DeleteUploadedFile('tags', imageName);
+    }
     await this.tagRepository.delete(id);
     return tag;
   }

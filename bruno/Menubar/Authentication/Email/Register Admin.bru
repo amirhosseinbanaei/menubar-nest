@@ -1,0 +1,22 @@
+meta {
+  name: Register Admin
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/auth/admin/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "full_name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "Password1@",
+    "national_number": "1234567890",
+    "phone_number": "09196535654",
+    "role": "admin"
+  }
+}

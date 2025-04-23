@@ -5,11 +5,16 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/items
+  url: {{BASE_URL}}/items?category_id=27
   body: none
-  auth: none
+  auth: bearer
 }
 
 params:query {
+  category_id: 27
   ~lang: fa
+}
+
+auth:bearer {
+  token: {{JWT_TOKEN}}
 }

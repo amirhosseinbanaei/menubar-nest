@@ -11,6 +11,7 @@ import { AdminsModule } from 'src/admins/admins.module';
     UsersModule,
     AdminsModule,
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),

@@ -5,31 +5,45 @@ meta {
 }
 
 patch {
-  url: {{BASE_URL}}/restaurants/5
+  url: {{BASE_URL}}/restaurants/6
   body: multipartForm
   auth: none
 }
 
 body:json {
-  {
-    "restaurant_id": 1,
-    "translations": [
-      {
-        "name": "پیتزا",
-        "language_code": "fa"
-      },
-      {
-        "name": "pizza",
-        "language_code": "en"
-      }
-    ],
-    "image": "https://google.com/image.png",
-    "order": 1,
-    "branch_id": 0
-  }
+  // {
+  //   "restaurant_id": 1,
+  //   "translations": [
+  //     {
+  //       "name": "پیتزا",
+  //       "language_code": "fa"
+  //     },
+  //     {
+  //       "name": "pizza",
+  //       "language_code": "en"
+  //     }
+  //   ],
+  //   "image": "https://google.com/image.png",
+  //   "order": 1,
+  //   "branch_id": 0
+  // }
+  
 }
 
 body:multipart-form {
+  colorPaletteId: 5
+  ~socials: '''
+    [
+      {
+        "platform": "googlemap",
+        "url": "https://googlemap.com"
+      },
+      {
+        "platform": "waze",
+        "url": "https://waze.com"
+      }
+    ]
+  '''
   ~translations: '''
     [
       { 
@@ -46,7 +60,7 @@ body:multipart-form {
   '''
   ~logo: @file(/Users/amirhosseinbanaei/Desktop/photo_2025-02-04_11-51-29.jpg)
   ~workingHours: '''
-     [
+    [
         {
           "day": "monday",
           "open_time": "09:00",

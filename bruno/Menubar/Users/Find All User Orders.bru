@@ -1,0 +1,15 @@
+meta {
+  name: Find All User Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_URL}}/users/orders/:user_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  user_id: 2
+}

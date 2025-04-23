@@ -78,11 +78,15 @@ export class ExtraItemsService {
     options?: {
       relation?: boolean;
       serialize?: boolean;
+      filterByItemId?: number;
+      extraRelation?: string[];
     },
   ) {
     const relations = options?.relation
       ? ['translations', 'translations.language']
       : [];
+
+    if (options?.extraRelation) relations.push(...options.extraRelation);
 
     const extraItems = await this.extraItemRepository.find({
       where: {
@@ -91,6 +95,11 @@ export class ExtraItemsService {
             language_code: language,
           },
         },
+        ...(options.filterByItemId && {
+          item: {
+            id: options.filterByItemId,
+          },
+        }),
       },
       relations,
     });

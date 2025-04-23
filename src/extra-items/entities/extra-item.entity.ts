@@ -32,6 +32,10 @@ export class ExtraItem {
   @Column()
   is_hidden: boolean;
 
-  @OneToMany(() => ExtraItemTranslation, (translation) => translation.extraItem)
+  @OneToMany(
+    () => ExtraItemTranslation,
+    (translation) => translation.extraItem,
+    { eager: true },
+  )
   translations: ExtraItemTranslation[];
 }

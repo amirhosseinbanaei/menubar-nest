@@ -1,14 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { executeTransaction } from 'src/common/utils/transaction.util';
-import { RestaurantInformation } from './entities/restaurant-information.entity';
 import { plainToInstance } from 'class-transformer';
 import { RestaurantResponseDto } from './dto/response-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { RestaurantWorkingHours } from './entities/restaurant-hours.entity';
+import { RestaurantSocial } from './entities/restaurant-socials.entity';
+import { RestaurantTranslation } from './entities/restaurant-translation.entity';
+import { FilterRestaurantDto } from './dto/filter-restaurant.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -32,7 +34,7 @@ export class RestaurantsService {
 
       translations.forEach(async (categoryTranslationData) => {
         const { language, name, description } = categoryTranslationData;
-        await manager.save(RestaurantInformation, {
+        await manager.save(RestaurantTranslation, {
           name,
           description,
           restaurant: { id: restaurant.id },
@@ -44,9 +46,17 @@ export class RestaurantsService {
     });
   }
 
-  async findAll(options?: { serialize?: boolean }) {
+  async findAll(options?: {
+    serialize?: boolean;
+    extraWhereOption?: FindOptionsWhere<Restaurant>;
+    extraRelation?: string[] | string;
+  }) {
+    const relations = ['translations', 'translations.language'];
+
+    if (options.extraRelation) relations.push(...options.extraRelation);
+
     const restaurants = await this.restaurantRepository.find({
-      relations: ['translations', 'translations.language'],
+      relations,
     });
 
     if (options?.serialize)
@@ -57,10 +67,28 @@ export class RestaurantsService {
     return restaurants;
   }
 
-  async findOne(restaurant_id: number, options?: { serialize?: boolean }) {
+  async findOne(
+    restaurant_id: number,
+    options?: {
+      serialize?: boolean;
+      fields?: FilterRestaurantDto | 'all';
+    },
+  ) {
+    const relations = [];
+
+    if (options && options.fields) {
+      if (options.fields === 'all') {
+        relations.push(
+          ...['translations', 'workingHours', 'socials', 'assets'],
+        );
+      } else {
+        relations.push(...options?.fields?.filter);
+      }
+    }
+
     const restaurant = await this.restaurantRepository.findOne({
       where: { id: restaurant_id },
-      relations: ['languages', 'translations', 'translations.language'],
+      relations,
     });
 
     if (!restaurant)
@@ -85,13 +113,14 @@ export class RestaurantsService {
 
     if (!restaurant) return null;
 
-    const { translations, workingHours } = updateCategoryDto;
+    const { translations, workingHours, socials, colorPaletteId } =
+      updateCategoryDto;
 
     return await executeTransaction(this.dataSource, async (manager) => {
       if (translations) {
-        translations.forEach(async (restaurantInformation) => {
-          const { language, name, description } = restaurantInformation;
-          await manager.save(RestaurantInformation, {
+        translations.forEach(async (translationData) => {
+          const { language, name, description } = translationData;
+          await manager.save(RestaurantTranslation, {
             name,
             description,
             restaurant,
@@ -109,6 +138,24 @@ export class RestaurantsService {
           });
         });
         await manager.save(RestaurantWorkingHours, restaurantWorkingHours);
+      }
+
+      if (socials) {
+        const savedSocials = [];
+        socials.forEach(async (socialData) => {
+          const { platform, url } = socialData;
+          savedSocials.push({
+            restaurant: { id: 6 },
+            platform,
+            url,
+          });
+        });
+        await manager.save(RestaurantSocial, savedSocials);
+      }
+
+      if (colorPaletteId) {
+        restaurant.color_palette_id = colorPaletteId;
+        await manager.save(Restaurant, restaurant);
       }
 
       return { ...restaurant, ...updateCategoryDto };

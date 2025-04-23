@@ -27,7 +27,19 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  async findOne(phone_number: string) {
+  async findOne(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
+
+    // return plainToInstance(UserResponseDto, user, {
+    //   excludeExtraneousValues: true,
+    // });
+
+    return user;
+  }
+
+  async findOneByPhoneNumber(phone_number: string) {
     const user = await this.usersRepository.findOne({
       where: { phone_number },
     });

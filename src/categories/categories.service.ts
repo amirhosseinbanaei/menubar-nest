@@ -7,12 +7,14 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { CategoryTranslation } from './entities/category-translation.entity';
-import { DataSource, MoreThan, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, MoreThan, Repository } from 'typeorm';
 import { DeleteUploadedFile } from '../common/utils/function.util';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { plainToInstance } from 'class-transformer';
 import { CategoryResponseDto } from './dto/response-category.dto';
 import { executeTransaction } from 'src/common/utils/transaction.util';
+import { Subcategory } from 'src/subcategories/entities/subcategory.entity';
+import { SubcategoryTranslation } from 'src/subcategories/entities/subcategory-translation.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -68,6 +70,34 @@ export class CategoriesService {
         });
       });
 
+      if (createCategoryDto.subcategories.length) {
+        await Promise.all(
+          createCategoryDto.subcategories.map(
+            async (subcategoryData, index) => {
+              const { translations } = subcategoryData;
+
+              const subcategory = await manager.save(Subcategory, {
+                restaurant: { id: restaurant_id },
+                order: index + category.id + 1,
+                category: { id: category.id },
+              });
+
+              await Promise.all(
+                translations.map(async (subcategoryTranslationData) => {
+                  const { language, name } = subcategoryTranslationData;
+                  await manager.save(SubcategoryTranslation, {
+                    name,
+                    subcategory,
+                    language: { language_code: language },
+                  });
+                }),
+              );
+
+              return subcategory;
+            },
+          ),
+        );
+      }
       return { id: category.id, ...createCategoryDto };
     });
   }
@@ -125,6 +155,8 @@ export class CategoriesService {
       relation?: boolean;
       serialize?: boolean;
       details?: boolean;
+      extraWhereOption?: FindOptionsWhere<Category>;
+      extraRelation?: string[];
     },
   ) {
     const relations = options?.relation
@@ -134,6 +166,8 @@ export class CategoriesService {
     if (options?.details)
       relations.push(...['subcategories', 'subcategories.translations']);
 
+    if (options?.extraRelation) relations.push(...options.extraRelation);
+
     const categories = await this.categoryRepository.find({
       where: {
         translations: {
@@ -141,15 +175,7 @@ export class CategoriesService {
             language_code: language,
           },
         },
-        ...(options?.details && {
-          subcategories: {
-            translations: {
-              language: {
-                language_code: language,
-              },
-            },
-          },
-        }),
+        ...options?.extraWhereOption,
       },
       relations,
     });

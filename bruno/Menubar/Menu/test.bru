@@ -1,0 +1,16 @@
+meta {
+  name: test
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{BASE_URL}}/menu?restaurant_id=1&lang=en
+  body: none
+  auth: bearer
+}
+
+params:query {
+  restaurant_id: 1
+  lang: en
+}

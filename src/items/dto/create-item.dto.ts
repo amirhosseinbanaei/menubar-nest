@@ -46,14 +46,21 @@ export class CreateItemDto {
   @IsOptional()
   image?: string;
 
-  @IsOptional()
   @IsArray()
+  @IsOptional()
   @IsNumber({}, { each: true })
-  // @Type(() => Number)
   @Transform(({ value }) =>
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   tag_ids?: number[];
+
+  @IsArray()
+  @IsOptional()
+  @IsNumber({}, { each: true })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  extra_item_ids?: number[];
 
   @IsArray()
   @ValidateNested({ each: true })

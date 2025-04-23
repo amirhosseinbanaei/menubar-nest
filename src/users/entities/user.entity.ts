@@ -1,3 +1,4 @@
+import { Order } from 'src/orders/entities/order.entity';
 import { TableReservation } from 'src/reservations/entities/reservation.entity';
 import {
   Entity,
@@ -35,6 +36,9 @@ export class User {
 
   @OneToMany(() => TableReservation, (t) => t.user)
   reservations: TableReservation[];
+
+  @OneToMany(() => Order, (order) => order.user, { nullable: false })
+  orders: Order[];
 
   // Helper methods
   isOtpValid(): boolean {

@@ -18,7 +18,7 @@ export class ItemTranslation {
   @Column({ length: 255 })
   name: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 5000 })
   description: string;
 
   @ManyToOne(() => Item, (item) => item.translations, {

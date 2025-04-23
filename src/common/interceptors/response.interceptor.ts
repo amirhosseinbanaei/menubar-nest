@@ -11,10 +11,13 @@ import { map } from 'rxjs/operators';
 export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<any> {
     return next.handle().pipe(
-      map((data) => ({
-        status: 'success',
-        data,
-      })),
+      map((data) => {
+        // console.log(data.PaginatedResponseDto);
+        return {
+          status: 'success',
+          data,
+        };
+      }),
     );
   }
 }

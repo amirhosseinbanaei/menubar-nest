@@ -30,10 +30,18 @@ export class ItemsController {
   }
 
   @Get()
-  findAll(@Query('lang') language: string | undefined) {
+  findAll(
+    @Query('lang') language: string | undefined,
+    @Query('category_id') category_id: string | undefined,
+  ) {
     return this.itemsService.findAll(language, {
       serialize: true,
       relation: true,
+      extraWhereOption: {
+        category: {
+          id: Number(category_id) || null,
+        },
+      },
     });
   }
 

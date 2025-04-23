@@ -3,6 +3,7 @@ import { DetailTranslationDto } from '../../languages/dto/translation.dto';
 import { SubCategoryResponseDto } from '../../subcategories/dto/response-subcategory.dto';
 import { CategoryResponseDto } from 'src/categories/dto/response-category.dto';
 import { TagResponseDto } from 'src/tags/dto/response-tag.dto';
+import { ExtraItemResponseDto } from 'src/extra-items/dto/response-extra-item.dto';
 
 export class ItemResponseDto {
   @Expose()
@@ -47,6 +48,11 @@ export class ItemResponseDto {
   @Expose()
   @Type(() => TagResponseDto)
   tags: TagResponseDto[];
+
+  @Expose()
+  @Type(() => ExtraItemResponseDto)
+  @Transform(({ obj }) => obj.extraItems, { toClassOnly: true })
+  extra_items: ExtraItemResponseDto[];
 
   @Expose()
   created_at: Date;

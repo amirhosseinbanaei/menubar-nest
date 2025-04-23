@@ -11,10 +11,18 @@ import { Language } from '../languages/entities/language.entity';
 import { CategoryTranslation } from './entities/category-translation.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckQueryLanguageMiddleware } from '../common/middlewares/language.middleware';
+import { Subcategory } from 'src/subcategories/entities/subcategory.entity';
+import { SubcategoryTranslation } from 'src/subcategories/entities/subcategory-translation.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Language, Category, CategoryTranslation]),
+    TypeOrmModule.forFeature([
+      Language,
+      Category,
+      CategoryTranslation,
+      Subcategory,
+      SubcategoryTranslation,
+    ]),
   ],
   controllers: [CategoriesController],
   providers: [CategoriesService],

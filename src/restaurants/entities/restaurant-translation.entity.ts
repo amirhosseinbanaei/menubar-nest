@@ -8,8 +8,8 @@ import {
 import { Restaurant } from './restaurant.entity';
 import { Language } from '../../languages/entities/language.entity';
 
-@Entity('restaurant_information')
-export class RestaurantInformation {
+@Entity('restaurant_translations')
+export class RestaurantTranslation {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,8 +25,9 @@ export class RestaurantInformation {
   @JoinColumn({ name: 'restaurant_id' })
   restaurant: Restaurant;
 
-  @ManyToOne(() => Language, (language) => language.restaurantInformation, {
+  @ManyToOne(() => Language, (language) => language.restaurantTranslation, {
     onDelete: 'CASCADE',
+    eager: true,
   })
   @JoinColumn({ name: 'language' })
   language: Language;

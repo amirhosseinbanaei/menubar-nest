@@ -45,13 +45,24 @@ export class ListingOrdersService {
               `Category with ID ${listingOrderDto.category_id} not found.`,
             );
 
-          return await this.subCategoryRepository.find();
+          return await this.subCategoryRepository.find({
+            where: {
+              category: { id: listingOrderDto.category_id },
+            },
+          });
         case 'items':
-          return await this.itemRepository.find();
+          return await this.itemRepository.find({
+            where: {
+              category: { id: listingOrderDto.category_id },
+            },
+            relations: ['category'],
+          });
         default:
           throw new BadRequestException(`Invalid entity: ${entity}`);
       }
     })();
+
+    console.log(foundedItems);
 
     if (foundedItems.length !== orders.length)
       throw new BadRequestException(

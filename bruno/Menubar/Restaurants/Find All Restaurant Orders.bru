@@ -1,0 +1,20 @@
+meta {
+  name: Find All Restaurant Orders
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{BASE_URL}}/restaurants/orders/:restaurant_id?limit=2&page=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 2
+  page: 1
+}
+
+params:path {
+  restaurant_id: 1
+}

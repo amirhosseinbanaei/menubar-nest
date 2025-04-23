@@ -1,0 +1,15 @@
+meta {
+  name: Find All Color Palettes
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{BASE_URL}}/color-palettes/:restaurant_id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  restaurant_id: 2
+}

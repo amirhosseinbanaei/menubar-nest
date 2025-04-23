@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { AdminRole } from '../enum/admin-role.enum';
+import { Role } from '../enum/admin-role.enum';
+import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
 @Entity('admins')
 export class Admin {
@@ -32,10 +35,10 @@ export class Admin {
 
   @Column({
     type: 'enum',
-    enum: AdminRole,
-    default: AdminRole.ADMIN,
+    enum: Role,
+    default: Role.Admin,
   })
-  role: AdminRole;
+  role: Role;
 
   @Column({ default: true })
   is_active: boolean;
@@ -45,6 +48,13 @@ export class Admin {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.admin, {
+    nullable: false,
+    eager: true,
+  })
+  @JoinColumn({ name: 'restaurant_id' })
+  restaurant: Restaurant;
 
   @BeforeInsert()
   @BeforeUpdate()

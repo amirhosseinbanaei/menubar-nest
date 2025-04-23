@@ -9,7 +9,7 @@ export class ExtraItemResponseDto {
   price: number;
 
   @Expose()
-  is_hide: boolean;
+  is_hidden: boolean;
 
   @Expose()
   image: string;

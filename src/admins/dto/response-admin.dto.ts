@@ -1,4 +1,5 @@
-import { Expose, Exclude } from 'class-transformer';
+import { Expose, Exclude, Type, Transform } from 'class-transformer';
+import { RestaurantResponseDto } from 'src/restaurants/dto/response-restaurant.dto';
 
 @Exclude()
 export class AdminResponseDto {
@@ -12,7 +13,11 @@ export class AdminResponseDto {
   email: string;
 
   @Expose()
-  national_number: string;
+  @Type(() => RestaurantResponseDto)
+  @Transform(({ obj }) => obj.restaurant?.id ?? null, {
+    toClassOnly: true,
+  })
+  restaurant_id: number | null;
 
   @Expose()
   phone_number: string;

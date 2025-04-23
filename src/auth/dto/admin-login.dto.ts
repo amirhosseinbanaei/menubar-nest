@@ -1,7 +1,7 @@
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class LoginAdminDto {
+export class AdminLoginDto {
   @IsEmail()
   @Transform(({ value }) => value?.toLowerCase().trim())
   email: string;

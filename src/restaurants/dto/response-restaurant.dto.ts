@@ -1,5 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { LanguageDto } from 'src/languages/dto/language.dto';
+import { ResponseLanguageDto } from 'src/languages/dto/response-language.dto';
 import { DetailTranslationDto } from 'src/languages/dto/translation.dto';
 
 class WorkingHourResponseDto {
@@ -35,12 +36,19 @@ export class RestaurantResponseDto {
   created_at: Date;
 
   @Expose()
+  color_palette_id: number;
+
+  @Expose()
+  @Type(() => ResponseLanguageDto)
+  languages: ResponseLanguageDto[];
+
+  @Expose()
   @Type(() => DetailTranslationDto)
   translations: DetailTranslationDto[];
 
   @Expose()
   @Type(() => WorkingHourResponseDto)
-  working_hours: WorkingHourResponseDto[];
+  workingHours: WorkingHourResponseDto[];
 
   @Expose()
   @Type(() => SocialMediaResponseDto)

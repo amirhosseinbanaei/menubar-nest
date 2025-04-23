@@ -1,0 +1,22 @@
+meta {
+  name: Add New Color Palette
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/color-palettes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "test",
+    "background": "#4334",
+    "foreground": "#540398",
+    "primary": "#sl5928",
+    "primary_foreground": "#409835"
+    //   "restaurant_id": "1"
+  }
+}

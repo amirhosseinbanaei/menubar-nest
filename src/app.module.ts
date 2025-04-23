@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -18,13 +19,17 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MenusModule } from './menus/menus.module';
+import { OrdersModule } from './orders/orders.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
+import { ColorPalettesModule } from './color-palettes/color-palettes.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: './.env', isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '127.0.0.1',
+      host: 'localhost',
       port: 3306,
       username: 'root',
       password: 'Mysqlpassword1',
@@ -59,8 +64,20 @@ import { MenusModule } from './menus/menus.module';
     AdminsModule,
     ReservationsModule,
     MenusModule,
+    OrdersModule,
+    ColorPalettesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard,
+    // },
+  ],
 })
 export class AppModule {}

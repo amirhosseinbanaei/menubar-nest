@@ -1,13 +1,18 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { MenusService } from './menus.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@Public()
 @Controller('menu')
 export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
   @Get()
-  findAll() {
-    return this.menusService.findAll();
+  getFullMenu(
+    @Query('lang') language: string,
+    @Query('restaurant_id', ParseIntPipe) restaurant_id: number,
+  ) {
+    return this.menusService.test(restaurant_id, language);
   }
 
   @Get(':category_id')

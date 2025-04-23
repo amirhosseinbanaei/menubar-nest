@@ -45,6 +45,7 @@ export class Item {
   @ManyToOne(() => Subcategory, {
     onDelete: 'SET NULL',
     nullable: true,
+    cascade: true,
   })
   subcategory: Subcategory | null;
 
@@ -54,7 +55,7 @@ export class Item {
   @OneToMany(() => ItemTranslation, (translation) => translation.item)
   translations: ItemTranslation[];
 
-  @ManyToMany(() => Tag, (tag) => tag.item, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Tag, (tag) => tag.items, { onDelete: 'CASCADE' })
   @JoinTable()
   tags: Tag[];
 

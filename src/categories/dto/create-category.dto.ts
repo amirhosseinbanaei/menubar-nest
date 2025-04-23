@@ -21,4 +21,14 @@ export class CreateCategoryDto {
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   translations: CreateTranslationDto[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateTranslationDto)
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  subcategories: {
+    translations: CreateTranslationDto[];
+  }[];
 }

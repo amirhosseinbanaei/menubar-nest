@@ -7,8 +7,8 @@ export class CreateTagDto {
   @Type(() => Number)
   restaurant_id: number;
 
-  image?: string;
-
+  image?: string; 
+  
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateTranslationDto)

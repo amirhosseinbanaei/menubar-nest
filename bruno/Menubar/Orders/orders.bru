@@ -1,0 +1,63 @@
+meta {
+  name: Orders
+  type: collection
+  version: 1
+}
+
+# Create Order
+post http://localhost:3000/orders
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "restaurant_id": 1,
+  "items": [
+    {
+      "item_id": 1,
+      "quantity": 2,
+      "unit_price": 10.99,
+      "total_price": 21.98,
+      "extra_item_id": 1,
+      "notes": "Extra spicy"
+    }
+  ],
+  "payment_type": "cash",
+  "scheduled_pickup_time": "2024-03-20T15:00:00Z",
+  "delivery_address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "state": "NY",
+    "postal_code": "10001",
+    "country": "USA"
+  }
+}
+
+# Get All Orders
+get http://localhost:3000/orders
+Authorization: Bearer {{auth_token}}
+
+# Get Orders by Restaurant
+get http://localhost:3000/orders?restaurant_id=1
+Authorization: Bearer {{auth_token}}
+
+# Get Orders by Status
+get http://localhost:3000/orders?status=pending
+Authorization: Bearer {{auth_token}}
+
+# Get Single Order
+get http://localhost:3000/orders/1
+Authorization: Bearer {{auth_token}}
+
+# Update Order
+patch http://localhost:3000/orders/1
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "status": "confirmed",
+  "scheduled_pickup_time": "2024-03-20T16:00:00Z"
+}
+
+# Cancel Order
+delete http://localhost:3000/orders/1
+Authorization: Bearer {{auth_token}} 

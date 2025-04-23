@@ -5,7 +5,16 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/restaurants/5
+  url: {{BASE_URL}}/restaurants/:restaurant_id?filter=workingHours,translations,socials
   body: none
   auth: none
+}
+
+params:query {
+  filter: workingHours,translations,socials
+  ~all-options: true
+}
+
+params:path {
+  restaurant_id: 6
 }

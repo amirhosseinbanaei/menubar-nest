@@ -41,7 +41,7 @@ export class SubcategoriesService {
 
       const savedSubcategory = await manager.save(Subcategory, {
         category: { id: category_id },
-        order: newSubcategoryOrder + 1,
+        order: newSubcategoryOrder + category_id + 1,
       });
 
       const duplicate = await Promise.all(

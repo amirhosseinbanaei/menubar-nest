@@ -24,10 +24,10 @@ export class TagsController {
   @Post()
   @UseInterceptors(CustomFileInterceptor('image', './uploads/tags', 'image'))
   create(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
     @Body(new LanguageValidationPipe()) createTagDto: CreateTagDto,
   ) {
-    return this.tagsService.create(createTagDto, file.filename);
+    return this.tagsService.create(createTagDto, file?.filename);
   }
 
   @Get()

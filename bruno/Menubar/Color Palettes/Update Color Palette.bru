@@ -1,0 +1,22 @@
+meta {
+  name: Update Color Palette
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{BASE_URL}}/color-palettes/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "name": "amir",
+    "primary": "#0f0f0f"
+  }
+}
